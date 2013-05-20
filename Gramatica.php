@@ -6,6 +6,11 @@
 require_once './Set.php';
 
 /**
+ * Necesita de Palavra para implementar gramática
+ */
+require_once './Palavra.php';
+
+/**
  * Classe que representa a definição formal de uma gramatica.
  *
  * @author fernando
@@ -31,7 +36,7 @@ class Gramatica {
     
     /**
      *
-     * @var Palavra Variável inicial da gramática
+     * @var Palavra Variável inicial da gramática, palavra de um único símbolo
      */
     private $inicial;
         
@@ -105,39 +110,36 @@ class Gramatica {
             if ($this->isLinhaDef("Terminais", $conteudoArquivo[0])){
                 if ($this->isLinhaSet($conteudoArquivo[1])){
                     $terminais = $this->criaSet($conteudoArquivo[1]);
-                    
+            
                     //Leitura das variáveis
                     if($this->isLinhaDef("Variaveis", $conteudoArquivo[2])){
                         if ($this->isLinhaSet($conteudoArquivo[3])){
                             $variaveis = $this->criaSet($conteudoArquivo[3]);
                             
-            var_dump($this->criaSet($conteudoArquivo[1]));
-            echo '<br />'; exit;
-                            
-                            /*//Leitura do Inicial
+                            //Leitura do Inicial
                             if ($this->isLinhaDef("Inicial", $conteudoArquivo[4])){
-                                if ($this->isLinhaPalavra($conteudoArquivo[5])){
+                                if ($this->isLinhaSimbolo($conteudoArquivo[5])){
                                     $inicial = $this->criaPalavra($conteudoArquivo[5]);
                                     
-                                    //Leitura de Regras
+                                    /*//Leitura de Regras
                                     if ($this->isLinhaDef("Regras", $conteudoArquivo[6])){
                                         $i = 7;
                                         $regras = new Set();
                                         while($this->isLinhaRegra($conteudoArquivo[$i])){
-                                            $regras->union($this->criaSetRegra($conteudoArquivo[$i]));
+                                            $regras = $regras->union($this->criaSetRegra($conteudoArquivo[$i]));
                                             $i++;
                                         }
-                                    }
+                                    }*/
                                 }
-                            }*/
+                            }
                         }
                     }
                 }
             }
             $this->terminais = $terminais;
             $this->variaveis = $variaveis;
-            //$this->inicial = $inicial;
-            //$this->producoes = $regras;
+            $this->inicial = $inicial;
+            $this->producoes = $regras;
             
         }else{
             echo 'err'; exit;
@@ -169,12 +171,12 @@ class Gramatica {
     }
     
     /**
-     * Verifica se a linha é de definição de um conjunto com um único elemento, ou uma única palavra. Por exemplo "{ S }   #Comentario" é definição de um conjunto com uma única palavra.
+     * Verifica se a linha é de definição de um conjunto com um único elemento, ou seja um único símbolo. Por exemplo "{ S }   #Comentario" é definição de um conjunto com um único símbolo.
      * 
      * @param string $linha Linha do arquivo a ser avalidada.
      * @return boolean True se a linha é do modelo "{S}   # XXXXX", False caso contrário 
      */
-    public function isLinhaPalavra($linha){
+    public function isLinhaSimbolo($linha){
         $regex = "/^({\s*((?![,{}\b\n\r\s#]).)+\s*})\s*((\s#).*)?$/";
         return preg_match($regex,$linha) == 1;
     }
@@ -197,31 +199,48 @@ class Gramatica {
      * 
      * @param string $linha Linha do arquivo a ser avalidada.
      * @return Set Conjunto com os itens lidos da linha
+     * @see isLinhaSet
      */
     public function criaSet($linha){
         $set = new Set();
         
         //Pega só a parte até o fecha chaves, ignorando tudo após isto (espaços e comentários)
         $linha = substr($linha, 0, strpos($linha, "}")+1);
-        var_dump($linha);
         
         //Pega o primeiro token (símbolo) do conjunto
         $simbolo = trim(strtok($linha,",{}#"));
-        var_dump($simbolo);
         //Se $linha = "{ A , B}", espera que $simbolo = "A"
         
         //Processa cada símbolo, adicionando ao conjunto final
-        while ($simbolo){
+        while (is_string($simbolo) && strlen($simbolo) > 0){
             //Cria um conjunto com o símbolo e faz união ao conjunto final
-            $set->union(new Set(array($simbolo)));
+            $set = $set->union(new Set(array($simbolo)));
+            
             //Próximo token, espera algo como "B", mesmo que B seja o último símbolo do cojunto
             $simbolo = trim(strtok(",{}#"));
-            var_dump($simbolo);
         }
         
         return $set;
     }
     
+    /**
+     * Supõe que a linha do parâmetro passou por isLinhaSimbolo, isto é, é uma definição de conjunto com um único símbolo. Sabendo disso 
+     * constói uma palavra com o símbolo lido (palavra de um único símbolo). Note que o conjunto é delimitado pelas chaves "{" e "}"
+     * 
+     * @param string $linha Linha do arquivo a ser avalidada.
+     * @return Palavra Palavra criada a partir do símbolo lido
+     * @see isLinhaSimbolo
+     */
+    public function criaPalavra($linha){
+        //Pega só a parte até o fecha chaves, ignorando tudo após isto (espaços e comentários)
+        $linha = substr($linha, 0, strpos($linha, "}")+1);
+        
+        //Pega o primeiro token (símbolo) do conjunto
+        $simbolo = trim(strtok($linha,",{}#"));
+        //Se $linha = "{ S }", espera que $simbolo = "S"
+        
+        return new Palavra($simbolo);
+    }
     
 }
 

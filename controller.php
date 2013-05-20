@@ -21,8 +21,6 @@ else{
     $newFileName = APPLICATION_DIRECTORY . "/uploads/gramatica.txt";
     if (moveArquivoGramatica($newFileName)){
         
-        echo 'hehe<br />';
-        
         //Interpreta o arquivo
         $gramatica = new Gramatica();
         $gramatica->leDoArquivo($newFileName);
