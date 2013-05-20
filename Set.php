@@ -60,7 +60,7 @@ class Set {
      * @return Set  Conjunto resultante da união deste com o do parâmetro.
      */
     public function union(Set $set) {
-        return new Set(array_unique(array_merge($a1,$a2), SORT_REGULAR));
+        return new Set(array_unique(array_merge($this->data, $set->getData()), SORT_REGULAR));
     }
     
     /**
