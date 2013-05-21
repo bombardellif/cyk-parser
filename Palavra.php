@@ -27,8 +27,19 @@ class Palavra {
         $this->palavra = (array)$palavra;
     }
     
+    
     public function getConteudo(){
         return $this->palavra;
+    }
+    
+    /**
+     * Verifica se esta palavra contem $simbolo, isto é, verifica se a string $simbolo é pertencente à palavra ( ou ainda existe a ocorrência de pelo menos uma instancia de $simbolo na palavra)
+     * 
+     * @param string $simbolo String que representa um símbolo a ser procurado
+     * @return boolean True se encontrou pelo menos um $simbolo na palavra, False caso contrário
+     */
+    public function contem($simbolo){
+        return in_array($simbolo, $this->palavra);
     }
 }
 

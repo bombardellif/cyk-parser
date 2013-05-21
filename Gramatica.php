@@ -37,7 +37,8 @@ class Gramatica {
     
     /**
      *
-     * @var Set Conjunto das produções da gramática
+     * @var Set Conjunto das produções da gramática, uma produção é Array de dois elementos do modelo: array([0] => X, [1] => Y), onde X é uma palavra de um único símbolo (Livre do contexto) e Y é uma palavra qualquer.
+     * Note também que uma regra X -> A B C ... é denotada por array([0] => new Palavra('X'), [1] => new Palavra(array('A','B','C', ...)), ou seja, abstraindo teríamos: array([0] => X, [1] => ABC)
      */
     private $producoes;
     

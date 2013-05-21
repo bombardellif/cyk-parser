@@ -62,8 +62,13 @@ function bootstrap(){
             //Envia pra view a gramatica
             $view['gramatica'] = $gramatica;
             
+            //Converte para Chomsky
+            $gramaticaChomsky = Chomsky::getChomsky($gramatica);
+            
+            //
+            
             //Aqui testa se a frase faz parte da linguagem (se frase pertence a ACEITA($gramatica))
-            //...
+            
 
             include 'views/veResultado.php';
             

@@ -78,8 +78,17 @@ class Set {
      * @param mixed $element    Elemento para verificar se pertence a este conjunto
      * @return bool True se o elemento pertence ao conjunto, False caso contrário.
      */
-    public function contains($element) {
+    public function belongs($element) {
         return in_array($element, $this->data);
+    }
+    
+    /**
+     * 
+     * @param Set subSet ...
+     * @return bool True se o conjunto enviado ($subSet) está contido no conjunto, False caso contrário.
+     */
+    public function contains(Set $subSet) {
+        //@TODO
     }    
 }
 
