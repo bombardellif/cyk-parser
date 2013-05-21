@@ -1,19 +1,23 @@
 <?php
+
+define("ESPACO_NODO", 36); 		// espaçamento entre nodos
+define("ESPACO_NIVEL", 50); 	// espaçamento entre níveis
+
 class Nodos
 {
 	private $_nome;
 	private $_arrFilhos;
 	
+	/* __construct(nome, array de filhos)
+		Dado um nome para o nodo e um array com filhos, inicia a classe com esses valores */
 	public function __construct($nome, $arrFilhos = array())
 	{
 		$this->_nome = $nome;
 		$this->_arrFilhos = $arrFilhos;
 	}
 	
-	/* função destruct? */
-	
 	/* nroNodosFolha()
-		Retorna o número de nodos folha */
+		Retorna o número de nodos folha (terminais) contidos em uma árvore */
 	public function nroNodosFolha()
 	{
 		if(empty($this->_arrFilhos))
@@ -30,59 +34,151 @@ class Nodos
 			return $soma;
 		}
 	}
-	
-	public function imprimeNodos($nivel = 0, $espaco_h = 0)
+	/* nroMaxNodosFolha()
+		Retorna o número de nodos folha (terminais) contidos no filho que possui o maior número de nodos folha (terminais).
+		Ou seja, retorna o número de nodos folha do maior filho */
+	public function nroMaxNodosFolha()
 	{
-		$nroFilhos = $this->nroNodosFolha();
-		if($nroFilhos > 0)
+		if(empty($this->_arrFilhos))
 		{
-			$pos_h = (($nroFilhos * 30) + (($nroFilhos - 1) * 30)) / 2 + $espaco_h;
-			$pos_v = ($nivel * 50) + 20;			
-			//$novoEspaco = $espaco_h;
-			foreach($this->_arrFilhos as $filho)
+			return 1;
+		}
+		else
+		{
+			$max = 0;
+			foreach($this->_arrFilhos as $nroFolhasFilho)
 			{
-				// Imprime a linha
-				$nroFolhasFilho = $filho->nroNodosFolha();
-				$pagina = '<line x1="'.$pos_h.'" y1="'.$pos_v.'" x2="'.((($nroFolhasFilho * 30) + (($nroFolhasFilho - 1) * 30)) / 2 + $espaco_h).'" y2="'.($pos_v + 50).'" style="stroke: rgb(0,0,0); stroke-width: 2;"/>';
-				echo $pagina;
-				$filho->imprimeNodos($nivel + 1, $espaco_h);
-				//echo '$filho->imprimeNodos('.($nivel + 1).', '.$novoEspaco.');<br>';
-				$espaco_h += ($nroFolhasFilho * 30) + ($nroFolhasFilho * 30);
+				if($nroFolhasFilho->nroNodosFolha() > $max)
+				{
+					$max = $nroFolhasFilho->nroNodosFolha();
+				}
 			}
-			$pagina = '<circle cx="'.$pos_h.'" cy="'.$pos_v.'" r="10" stroke="black" stroke-width="2" fill="red" />';
-			echo $pagina;
+			return $max;
 		}
 	}
+	/* nroFilhos()
+		Retorna o número de filhos de determinado nodo */
+	public function nroFilhos()
+	{
+		return count($this->_arrFilhos);
+	}
+	/* imprimeBola(x, y)
+		Retorna uma string HTML que imprime um círculo de raio 10 com centro em (x, y) */
+	public function imprimeBola($cx, $cy)
+	{
+		$cx += 20;
+		$cy += 20;
+		return "<circle cx='$cx' cy='$cy' r='10' stroke='red' stroke-width='2' fill='white' />\n";
+	}
+	/* imprimeLinha((x0, y0), (x1, y1))
+		Imprime na tela uma linha de espessura 2px com extremidades em [x0, y0] e [x1, y1] */
+	public function imprimeLinha($x0, $y0, $x1, $y1)
+	{
+		$x0 += 20;
+		$y0 += 20;
+		$x1 += 20;
+		$y1 += 20;
+		echo "<line x1='$x0' y1='$y0' x2='$x1' y2='$y1' style='stroke: rgb(255,0,0); stroke-width: 2;'/>\n";
+	}	
+	/* imprimeNodos(nivel, espaco, largura)
+		Imprime o nodo em determinado nível, adicionando-se determinado espaço à esquerda e centralizando na largura dada.
+		Desenha a árvore recursivamente. A primeira chamada da função recebe a largura total da árvore. A cada nível que a árvore desce,
+		essa largura total vai sendo dividida igualmente (árvore simétrica) entre os filhos. Para imprimir os irmãos corretamente, é adicionado a cada nodo
+		que a função imprime um espaçamento (que é a soma dos espaços que os irmãos anteriores ocuparam). */
+	public function imprimeNodos($nivel, $espaco_h, $largura)
+	{
+		$bola_x = ($largura / 2) + $espaco_h; 	// média da largura + espaço
+		$bola_y = $nivel * ESPACO_NIVEL; 		// em relação ao nível
+		$bola = $this->imprimeBola($bola_x, $bola_y);
+		
+		if(count($this->_arrFilhos) != 0)
+			$mediaLarguraFilho = $largura / count($this->_arrFilhos);
+	
+		foreach($this->_arrFilhos as $filho)
+		{
+			$this->imprimeLinha($bola_x, $bola_y, ($mediaLarguraFilho / 2) + $espaco_h, ($bola_y + ESPACO_NIVEL)); 	// desenha a linha ligando as bolas
+			$filho->imprimeNodos($nivel + 1, $espaco_h, $mediaLarguraFilho);										// chamada recursiva
+			$espaco_h += $mediaLarguraFilho;																		// adiciona espaçamento
+		}
+		
+		echo $bola; // imprime as bolas no final para aparecerem sobrepostas
+	}
 }
-// espaçamento entre filhos = 40
-// largura filhos = 22 ( 2 = borda 
-/*
-							O
-			O				O				O
-	O		O		O		O			O		O
-*/
+
 class Arvore
 {
 	/* :D */
-	private $arrNodos;
+	private $_arrArvore;
+	
+	public function __construct($arvore)
+	{
+		// Esperar implementação do CYK para implementar pro melhor uso
+		// Por enquanto o uso é:
+		// $nodos = new Nodos("nodo1", $nodos2);
+		// $nova_arvore = new Arvore($nodos);
+		// onde:
+		// $nodos2 = conjunto (array) de nodos adjacentes a "nodo1"
+		// $nodos = nodo "nodo1" com filhos $nodos2
+		// $nova_arvore = árvore construída a partir do nodo "nodo1"
+		$this->_arrArvore = $arvore;
+	}
+	
+	public function imprimeArvore()
+	{
+		// calcula a largura da árvore
+		$larguraArvore = $this->_arrArvore->nroMaxNodosFolha() * ESPACO_NODO * $this->_arrArvore->nroFilhos();
+		$this->_arrArvore->imprimeNodos(0, 0, $larguraArvore);
+	}
 }
 
-$teste = new Nodos("A", array(new Nodos("B", array(new Nodos("D"), new Nodos("E"))), new Nodos("C", array(new Nodos("I"))), new Nodos("F", array(new Nodos("H"), new Nodos("G")))));
+// ÁRVORES PARA TESTE, APENAS MUDAR O ÍNDICE EM $arvore :D
+$teste = new Nodos("A", array(new Nodos("B", array(new Nodos("D", array(new Nodos("A", array(new Nodos("B", array(new Nodos("D"), new Nodos("E"))), new Nodos("C", array(new Nodos("I"))), new Nodos("F", array(new Nodos("H"), new Nodos("G"))), new Nodos("J"), new nodos("K"))))), new Nodos("E"))), new Nodos("C", array(new Nodos("I"))), new Nodos("F", array(new Nodos("H"), new Nodos("G"))), new Nodos("J"), new nodos("K")));
+$teste2 = new Nodos("A", 
+			array(
+			new Nodos("B",
+				array(
+					new Nodos("D", array(new Nodos("H"), new Nodos("I"))),
+					new Nodos("E", array(new Nodos("H"), new Nodos("I"))))), 
+			new Nodos("C",
+				array(
+					new Nodos("D", array(new Nodos("H"), new Nodos("I"))),
+					new Nodos("E", array(new Nodos("H"), new Nodos("I")))))));
+$teste3 = new Nodos("A", array(new Nodos("B"), new Nodos("C")));
+$teste4 = new Nodos("A", array(new Nodos("B", array(new Nodos("E"), new Nodos("D"))), new Nodos("C")));
 
-/*echo $teste->nroNodosFolha();*/
-
-
-
-/* <line x1="0" y1="0" x2="200" y2="0" style="stroke: rgb(255,0,0); stroke-width: 2;"/>
-<circle cx="1000" cy="50" r="10" stroke="black" stroke-width="2" fill="red" /> */
-
+$teste5 = new Nodos("A", 
+			array(
+			new Nodos("B",
+				array(
+					new Nodos("D", array(new Nodos("H"), new Nodos("I"))),
+					new Nodos("E"))), 
+			new Nodos("C",
+				array(
+					new Nodos("F"),
+					new Nodos("G")))));
+$teste6 = new Nodos("A", array(new Nodos("B", array(new Nodos("F"), new Nodos("G"))), new Nodos("C", array(new Nodos("H"), new Nodos("I"))), new Nodos("D", array(new Nodos("J"), new Nodos("K"))), new Nodos("E", array(new Nodos("L"), new Nodos("M")))));
+$teste7 = new Nodos("A", 
+			array(
+			new Nodos("B",
+				array(
+					new Nodos("D", array(new Nodos("H", array(new Nodos("H"), new Nodos("I"))), new Nodos("I", array(new Nodos("H"), new Nodos("I"))))),
+					new Nodos("E", array(new Nodos("H", array(new Nodos("H"), new Nodos("I"))), new Nodos("I", array(new Nodos("H"), new Nodos("I"))))))), 
+			new Nodos("B",
+				array(
+					new Nodos("D", array(new Nodos("H", array(new Nodos("H"), new Nodos("I"))), new Nodos("I", array(new Nodos("H"), new Nodos("I"))))),
+					new Nodos("E", array(new Nodos("H", array(new Nodos("H"), new Nodos("I"))), new Nodos("I", array(new Nodos("H"), new Nodos("I"))))))), 
+			new Nodos("C",
+				array(
+					new Nodos("D", array(new Nodos("H", array(new Nodos("H"), new Nodos("I"))), new Nodos("I", array(new Nodos("H"), new Nodos("I"))))),
+					new Nodos("E", array(new Nodos("H", array(new Nodos("H"), new Nodos("I"))), new Nodos("I", array(new Nodos("H"), new Nodos("I")))))))));
+$arvore = new Arvore($teste7);
 ?>
 <!DOCTYPE html>
  <html>
  <body>
 
  <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="100%">
-   <?php $teste->imprimeNodos(); ?>
+   <?php $arvore->imprimeArvore(); ?>
  </svg>
  </body>
  </html>
