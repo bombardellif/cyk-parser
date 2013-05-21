@@ -1,6 +1,7 @@
 <?php
 //Bibliotecas Utilizadas
 require_once './Gramatica.php';
+require_once './Chomsky.php';
 
 /**
  * Tratamento do upload de arquivo, move da localização temporária para a final.

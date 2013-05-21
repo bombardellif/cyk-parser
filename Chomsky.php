@@ -14,29 +14,33 @@ class Chomsky {
     
     /**
      * Simplifica a $gramatica, retirando produções vazias (na forma A -> ³), segundo o algorítmo do livro "Linguagens Formais e Autômato" de Paulo Blauth Menezes. Note que a palavra vazia é denotada pela palavra que contem um único símbolo s, s = '³'.
-     * Supõe que $gramatica é Livre do Contexto e não a modifica, ou seja, retorna uma nova gramática.
+     * Supõe que $gramatica é Livre do Contexto e não a modifica, ou seja, retorna uma nova gramática. Além disso, aceita 
      * 
      * @param Gramatica $gramatica A gramática a ser simplificada
      * @return Gramatica Uma nova gramática simplificada, isto é, não modifica a gramática de entrada
      */
     static function simplificaProducoesVazias(Gramatica $gramatica){
         $gramaticaSimples = clone $gramatica;
+        
         ////////Etapa 1\\\\\\\\
         $V³ = new Set();
         
-        foreach ($gramaticaSimples->getProducoes() as $producao){
+        //var_dump($gramaticaSimples->getProducoes()->getData()[14]); exit;
+        
+        foreach ($gramaticaSimples->getProducoes()->getData() as $producao){
             //Verifica se a regra leva a ³ diretamente
-            if ($producao[1]->contem('³')){
+            if ($producao[1] == new Palavra('³')){
                 //Se sim adiciona o símbolo do lado esquerdo da regra à V³
                 $V³ = $V³->union(new Set(array($producao[0])));
             }
         }
+        var_dump($V³->getData());
         //Verifica se leva a ³ indiretamente
         $adicionou = true;
         while($adicionou){
             $adicionou = false;
             //Ve se cada produção gera alguma palavra cujos simbolos estao em V³
-            foreach ($gramaticaSimples->getProducoes() as $producao){
+            foreach ($gramaticaSimples->getProducoes()->getData() as $producao){
                 if ($V³->contains(new Set($producao[1]->getConteudo()))){
                     //Se sim adicona-o a V³
                     $V³->union($producao[0]);
@@ -44,11 +48,12 @@ class Chomsky {
                 }
             }
         }
+        var_dump($V³->getData()); exit;
         
         ////////Etapa 2\\\\\\\\
         $P1 = new Set();
         
-        foreach ($gramaticaSimples->getProducoes() as $producao){
+        foreach ($gramaticaSimples->getProducoes()->getData() as $producao){
             //Verifica se a regra não leva a ³ diretamente
             if ($producao[1] != new Palavra('³')){
                 //Se sim adiciona a produção à P1
@@ -60,8 +65,8 @@ class Chomsky {
         while($adicionou){
             $adicionou = false;
             //Ve se cada produção gera alguma palavra com símbolos que geram o vazio
-            foreach ($P1 as $p){
-                foreach($V³ as $x){
+            foreach ($P1->getData() as $p){
+                foreach($V³->getData() as $x){
                     if ($p[1]->contem($x) && $p[1]->getConteudo()[0] != $x && $p[1]->getConteudo()[$p['1']->tamanho()-1] != $x){
                         //Aqui significa que $p leva a uma palavra que contem símbolos que geram o vazio
                         $novoP = array();
