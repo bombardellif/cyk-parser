@@ -15,6 +15,7 @@ class Palavra {
     private $palavra;
     
     /**
+     * <pre>
      * Contrutor da classe, inicializa a palavra.
      * Aceita como parâmetro tanto uma string ou um array de strings.
      * Ex.:
@@ -40,6 +41,10 @@ class Palavra {
      */
     public function contem($simbolo){
         return in_array($simbolo, $this->palavra);
+    }
+    
+    public function tamanho() {
+        return count($this->palavra);
     }
 }
 

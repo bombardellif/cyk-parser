@@ -98,6 +98,75 @@ class Chomsky {
     static function simplificaProducoesSubstituemVariaveis(Gramatica $gramatica){
         
     }
+    
+    /**
+     * Etapa 2 da transformação de uma gramática para a Forma Normal de Chomsky.
+     * Transformação do lado direito das produções de comprimento maior ou igual a dois,
+     * substituíndo os terminais por variáveis.
+     * @param Gramatica $gramatica
+     */
+    static function substituiTerminaisPorVariaveis(Gramatica $gramatica) {
+        $producoes = $gramatica->getProducoes();
+        $variaveis = $gramatica->getVariaveis();
+        $terminais = $gramatica->getTerminais();
+        $prefixo = 'C';  // TODO: DETERMINAR PREFIXO
+        
+        // para toda produção com lado direto maior ou igual a 2, faça ...
+        foreach ($producoes->getData() as &$p) {
+            if (($tam = $p[1]->tamanho()) >= 2) {
+                // para todos os símbolos terminais do lado direito da produção, faça ...
+                for($r=0; $r<$tam; $r++) {
+                    if ($terminais->contains($p[1][$r])) {
+                        // Gera nova produção cujo lado esquerdo é uma nova variável
+                        // e o lado direito é o terminal
+                        $novaProducao = array(
+                            0 => new Palavra($prefixo . $p[1][$r]),
+                            1 => array(
+                                new Palavra($p[1][$r])
+                            )
+                        );
+                        // adiciona a nova variável ao conjunto de variáveis da gramática
+                        $variaveis = $variaveis->union(new Set(array(
+                            $novaProducao[0]
+                        )));
+                        // Substitui o terminal atual pela nova variável no lado direito da produção $p
+                        $p[1][$r] = $novaProducao[0];
+                        // adiciona a nova produção no conjunto de produções da gramática
+                        $producoes = $producoes->union(new Set(array(
+                            $novaProducao
+                        )));
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Etapas 3. Transformação do lado direito das produções de comprimento maior
+     * ou igual a 3, em produçẽs com exatamente duas variáveis.
+     * @param Gramatica $gramatica
+     */
+    static function reduzTamanhoProducoes(Gramatica $gramatica) {
+        $producoes = $gramatica->getProducoes();
+        $variaveis = $gramatica->getVariaveis();
+        $prefixo = 'D'; // TODO: Determinar Prefixo
+        
+        foreach ($producoes->getData() as $p) {
+            if (($tam = $p[1]->tamanho()) >= 3) {
+                $novasVariaveis = array();
+                for ($i=1; $i<$tam-1; $i++) {
+                    $novasVariaveis[] = new Palavra($prefixo . $i);
+                }
+                $variaveis = $variaveis.union(new Set($novasVariaveis));
+                
+                $novasProducoesDir = array();
+                for ($j=1; $j<$tam-1; $j++){
+                    
+                }
+                $producoes->diff(new Set(array($p)));
+            }
+        }
+    }
 
 
     /**

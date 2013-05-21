@@ -83,12 +83,13 @@ class Set {
     }
     
     /**
-     * 
-     * @param Set subSet ...
-     * @return bool True se o conjunto enviado ($subSet) está contido no conjunto, False caso contrário.
+     * Operador de contenção de conjuntos.
+     * @param Set   $subSet  Conjunto a testar se está contido neste.
+     * @return bool True se este conjunto contém o conjunto enviado no parâmetro 
+     * ($subSet), False caso contrário.
      */
     public function contains(Set $subSet) {
-        //@TODO
+        return array_intersect($this->data, $subSet->getData()) == $subSet->getData();
     }    
 }
 
