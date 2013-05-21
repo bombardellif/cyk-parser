@@ -11,6 +11,13 @@ require_once './Set.php';
 require_once './Palavra.php';
 
 /**
+ * Exceções Utilizadas
+ */
+require_once './LeituraArquivoGramaticaException.php';
+require_once './ParseArquivoGramaticaException.php';
+
+
+/**
  * Classe que representa a definição formal de uma gramatica.
  *
  * @author fernando
@@ -98,43 +105,67 @@ class Gramatica {
      * 
      * @param String $nomeArquivo Caminho estático ao arquivo fonte da gramática
      * @return void
-     * @throws LeituraArquivoGramaticaException
+     * @throws LeituraArquivoGramaticaException, ParseArquivoGramaticaException
      */
     public function leDoArquivo($nomeArquivo){
         
         $conteudoArquivo = file($nomeArquivo);
         if ($conteudoArquivo){
-            var_dump($conteudoArquivo);
             
             //Leitura dos Terminais
             if ($this->isLinhaDef("Terminais", $conteudoArquivo[0])){
                 if ($this->isLinhaSet($conteudoArquivo[1])){
                     $terminais = $this->criaSet($conteudoArquivo[1]);
+                    assert(!is_null($terminais) && count($terminais->getData()) > 0);
             
                     //Leitura das variáveis
                     if($this->isLinhaDef("Variaveis", $conteudoArquivo[2])){
                         if ($this->isLinhaSet($conteudoArquivo[3])){
                             $variaveis = $this->criaSet($conteudoArquivo[3]);
+                            assert(!is_null($variaveis) && count($variaveis->getData()) > 0);
                             
                             //Leitura do Inicial
                             if ($this->isLinhaDef("Inicial", $conteudoArquivo[4])){
                                 if ($this->isLinhaSimbolo($conteudoArquivo[5])){
                                     $inicial = $this->criaPalavra($conteudoArquivo[5]);
+                                    assert(!is_null($inicial) && count($inicial->getConteudo()) == 1); //GLC
                                     
-                                    /*//Leitura de Regras
+                                    //Leitura de Regras
                                     if ($this->isLinhaDef("Regras", $conteudoArquivo[6])){
                                         $i = 7;
                                         $regras = new Set();
-                                        while($this->isLinhaRegra($conteudoArquivo[$i])){
-                                            $regras = $regras->union($this->criaSetRegra($conteudoArquivo[$i]));
+                                        
+                                        
+                                        //var_dump($this->isLinhaRegra($conteudoArquivo[16])); 
+                                        //var_dump ($this->criaRegra($conteudoArquivo[16])); exit;
+                                        while($i < count($conteudoArquivo) && $this->isLinhaRegra($conteudoArquivo[$i])){
+                                            $regras = $regras->union(new Set(array($this->criaRegra($conteudoArquivo[$i]))));
                                             $i++;
                                         }
-                                    }*/
+                                        
+                                        if (count($regras->getData()) <= 0){
+                                            throw new ParseArquivoGramaticaException("Conjunto de regras inexistente ou vazio", 41);
+                                        }
+                                    }else{
+                                        throw new ParseArquivoGramaticaException("Seção de regras não encontrada", 40);
+                                    }
+                                }else{
+                                    throw new ParseArquivoGramaticaException("Símbolo inicial inexistente", 31);
                                 }
+                            }else{
+                                throw new ParseArquivoGramaticaException("Seção de símbolo inicial não encontrada", 30);
                             }
+                        }else{
+                            throw new ParseArquivoGramaticaException("Conjunto de variáveis inexistente ou vazio", 21);
                         }
+                    }else{
+                        throw new ParseArquivoGramaticaException("Seção de variáveis não encontrada", 20);
                     }
+                }else{
+                    throw new ParseArquivoGramaticaException("Conjunto de terminais inexistente ou vazio", 11);
                 }
+            }else{
+                throw new ParseArquivoGramaticaException("Seção de terminais não encontrada", 10);
             }
             $this->terminais = $terminais;
             $this->variaveis = $variaveis;
@@ -142,8 +173,7 @@ class Gramatica {
             $this->producoes = $regras;
             
         }else{
-            echo 'err'; exit;
-            //throw LeituraArquivoGramaticaException
+            throw new LeituraArquivoGramaticaException("Conteúdo do arquivo vazio ou não pode ser lido");
         }
     }
     
@@ -240,6 +270,42 @@ class Gramatica {
         //Se $linha = "{ S }", espera que $simbolo = "S"
         
         return new Palavra($simbolo);
+    }
+    
+    /**
+     * Supõe que a linha do parâmetro passou por isLinhaRegra, isto é, é uma definição de conjunto de regras de produção. Sabendo disso 
+     * constói uma regra de produção de acorodo com os símbolos da linha. Note que cada símbolo é separado por vírgula, 
+     * o bracket '>' delimita o lado esquerdo do direito da produção e o conjunto é delimitado pelas chaves "{" e "}".
+     * Note também que uma regra X -> A B C ... é denotada por array([0] => new Palavra('X'), [1] => new Palavra(array('A','B','C', ...)), ou seja, abstraindo teríamos: array([0] => X, [1] => ABC)
+     * 
+     * @param string $linha Linha do arquivo a ser avalidada.
+     * @return array Array de dois elementos do modelo: array([0] => X, [1] => Y), onde X é uma palavra de um único símbolo (Livre do contexto) e Y é uma palavra qualquer, assim retorna um par ordenado que representa a regra lida da $linha
+     * @see isLinhaRegra
+     */
+    public function criaRegra($linha){
+        
+        //Pega só a parte até o fecha chaves, ignorando tudo após isto (espaços e comentários)
+        $linha = substr($linha, 0, strpos($linha, "}")+1);
+        
+        //Pega o primeiro token (lado esquerdo da produção)
+        $palavraEsquerda = trim(strtok($linha,",{>"));
+        //Se $linha = "{ A > B, C}", espera que $esquerdo = "A"
+        
+        //Pega o primeiro token (lado esquerdo da produção)
+        $simbolo = trim(strtok(",{}#"));
+        
+        //Processa cada símbolo, adicionando os ao conjunto final
+        while (is_string($simbolo) && strlen($simbolo) > 0){
+            //Cria uma array com os simbolos que formam a palavra
+            $palavraDireita[] = $simbolo;
+            
+            //Próximo token, espera algo como "B", mesmo que B seja o último símbolo do cojunto
+            $simbolo = trim(strtok(",{}#"));
+        }
+        
+        $regra[0] = new Palavra($palavraEsquerda);
+        $regra[1] = new Palavra($palavraDireita);
+        return $regra;
     }
     
 }

@@ -26,6 +26,10 @@ class Palavra {
     public function __construct($palavra) {
         $this->palavra = (array)$palavra;
     }
+    
+    public function getConteudo(){
+        return $this->palavra;
+    }
 }
 
 ?>
