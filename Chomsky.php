@@ -14,18 +14,18 @@ class Chomsky {
     
     /**
      * Simplifica a $gramatica, retirando produções vazias (na forma A -> ³), segundo o algorítmo do livro "Linguagens Formais e Autômato" de Paulo Blauth Menezes. Note que a palavra vazia é denotada pela palavra que contem um único símbolo s, s = '³'.
-     * Supõe que $gramatica é Livre do Contexto e não a modifica, ou seja, retorna uma nova gramática. Além disso, aceita 
+     * Supõe que $gramatica é Livre do Contexto e não a modifica, ou seja, retorna uma nova gramática. Além disso, aceita que a gramática não aceita a palavra vazia (³ não pertence a GERA($gramatica))
      * 
      * @param Gramatica $gramatica A gramática a ser simplificada
      * @return Gramatica Uma nova gramática simplificada, isto é, não modifica a gramática de entrada
      */
     static function simplificaProducoesVazias(Gramatica $gramatica){
+        
+        //Clona para não modifica fonte
         $gramaticaSimples = clone $gramatica;
         
         ////////Etapa 1\\\\\\\\
         $V³ = new Set();
-        
-        //var_dump($gramaticaSimples->getProducoes()->getData()[14]); exit;
         
         foreach ($gramaticaSimples->getProducoes()->getData() as $producao){
             //Verifica se a regra leva a ³ diretamente
@@ -48,7 +48,6 @@ class Chomsky {
                 }
             }
         }
-        var_dump($V³->getData());
         
         ////////Etapa 2\\\\\\\\
         $P1 = new Set();
@@ -61,7 +60,7 @@ class Chomsky {
             }
         }
         
-        var_dump($P1->getData());
+        //var_dump($P1->getData());
         //Exclusão de produções vazias
         $qtdElementos = 0;
         while($P1->size() > $qtdElementos){
@@ -73,7 +72,7 @@ class Chomsky {
                         //Aqui significa que $p leva a uma palavra que contem símbolos que geram o vazio
                         $novoP = array();
                         $novoP[0] = $p[0];
-                        $novoP[0] = $p[1]->remove($x->getConteudo()[0]);
+                        $novoP[1] = $p[1]->remove($x->getConteudo()[0]);
                         //Adiciona a nova regra a P1 (sem X)
                         $P1 = $P1->union(new Set(array($novoP)));
                         break;
@@ -81,10 +80,10 @@ class Chomsky {
                 }
             }
         }
-        var_dump($P1->getData()); exit;
+        //var_dump($P1->getData()); exit;
         
         //Novo conjunto de produções (simplificado) da gramática
-        $gramaticaSimples->setProducoes($P1->getData());
+        $gramaticaSimples->setProducoes($P1);
         
         return $gramaticaSimples;
     }
@@ -194,19 +193,23 @@ class Chomsky {
 
 
     /**
-     * Transforma a $gramatica em uma gramática equivalente na forma normal de Chomsky, suponde que $gramatica é livre do contexto.
+     * Transforma a $gramatica em uma gramática equivalente na forma normal de Chomsky, supondo que $gramatica é livre do contexto. Não modifica o objeto recebido por parâmetro.
      * @param Gramatica $gramatica A gramática livre do contexto a ser transformada
      * @return Gramatica a gramática na forma normal de Chomsky
      */
     static function getChomsky(Gramatica $gramatica){
-        //Simplificações
-        $gramatica = self::simplificaProducoesVazias($gramatica);
         
-        $gramatica = self::simplificaProducoesSubstituemVariaveis($gramatica);
+        //Não modifica gramática original
+        $novaGramatica = clone $gramatica;
+        
+        //Simplificações
+        $novaGramatica = self::simplificaProducoesVazias($gramatica);
+        
+        $novaGramatica = self::simplificaProducoesSubstituemVariaveis($novaGramatica);
         
         
         //Faz toda a mágica
-        return $gramatica;
+        return $novaGramatica;
     }
 }
 
