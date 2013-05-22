@@ -28,7 +28,18 @@ class Palavra {
         $this->palavra = (array)$palavra;
     }
     
+    /**
+     * Representação String da Palavra.
+     * @return string Símbolos da Palavra separados por vírgula
+     */
+    public function __toString() {
+        return implode(',', $this->palavra);
+    }
     
+    /**
+     * Retorna o conteúdo propriamente da palavra
+     * @return array Array de Símbolos (Array de Strings) que representa a palavra
+     */
     public function getConteudo(){
         return $this->palavra;
     }
@@ -62,14 +73,14 @@ class Palavra {
     }
     
     /**
-     * Remove todas as ocorrências de $simbolo na palavra
+     * Remove todas as ocorrências de $simbolo na palavra e retorna a nova palavra modificada, sem salvar a alteração na palavra do objeto.
      * 
      * @param string $simbolo String que representa um símbolo a ser removido
-     * @return void
+     * @return Palavra a palavra resultado
      */
     public function remove($simbolo){
         $newArray = array_diff($this->palavra, array($simbolo));
-        $this->palavra = array_combine(range(0, count($newArray)-1), $newArray);
+        return new Palavra(array_combine(range(0, count($newArray)-1), $newArray));
     }
     
     /**
