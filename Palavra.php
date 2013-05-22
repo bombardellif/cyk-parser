@@ -72,6 +72,10 @@ class Palavra {
         $this->palavra = array_combine(range(0, count($newArray)-1), $newArray);
     }
     
+    /**
+     * Retorna o tamanho da palavra (quantidade de Strings na Palavra).
+     * @return int  Tamanho da palavra
+     */
     public function tamanho() {
         return count($this->palavra);
     }
