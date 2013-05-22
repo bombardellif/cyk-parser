@@ -111,17 +111,18 @@ class Chomsky {
         $prefixo = 'C';  // TODO: DETERMINAR PREFIXO
         
         // para toda produção com lado direto maior ou igual a 2, faça ...
-        foreach ($producoes->getData() as $p) {
+        $novasProds = $producoes->getData();
+        foreach ($novasProds as &$p) {
             if (($tam = $p[1]->tamanho()) >= 2) {
                 // para todos os símbolos terminais do lado direito da produção, faça ...
                 for($r=0; $r<$tam; $r++) {
-                    if ($terminais->contains($p[1][$r])) {
+                    if ($terminais->contains($p[1]->getSimbolo($r))) {
                         // Gera nova produção cujo lado esquerdo é uma nova variável
                         // e o lado direito é o terminal
                         $novaProducao = array(
-                            0 => new Palavra($prefixo . $p[1][$r]),
+                            0 => new Palavra($prefixo . $p[1]->getSimbolo($r)),
                             1 => array(
-                                new Palavra($p[1][$r])
+                                new Palavra($p[1]->getSimbolo($r))
                             )
                         );
                         // adiciona a nova variável ao conjunto de variáveis da gramática
@@ -129,7 +130,7 @@ class Chomsky {
                             $novaProducao[0]
                         )));
                         // Substitui o terminal atual pela nova variável no lado direito da produção $p
-                        $p[1][$r] = $novaProducao[0];
+                        $p[1]->setSimbolo($r, $novaProducao[0]);
                         // adiciona a nova produção no conjunto de produções da gramática
                         $producoes = $producoes->union(new Set(array(
                             $novaProducao
@@ -138,6 +139,9 @@ class Chomsky {
                 }
             }
         }
+        $gramatica->setVariaveis($variaveis);
+        $producoes->setData($novasProds);
+        $gramatica->setProducoes($producoes);
     }
     
     /**
@@ -152,19 +156,40 @@ class Chomsky {
         
         foreach ($producoes->getData() as $p) {
             if (($tam = $p[1]->tamanho()) >= 3) {
-                $novasVariaveis = array();
+                // Gera as novas variáveis necessárias para a gramática na FNC
+                    // $p[1]->getSimbolo(0) não é nova variável, porém continuará no conjunto. Colocamos ela nessa array
+                    // para entrar como primeira variável no loop da geração de novas produções
+                $novasVariaveis = array(0 => $p[1]->getSimbolo(0)); 
                 for ($i=1; $i<$tam-1; $i++) {
-                    $novasVariaveis[] = new Palavra($prefixo . $i);
+                    $novasVariaveis[$i] = new Palavra($prefixo . $i);
                 }
-                $variaveis = $variaveis.union(new Set($novasVariaveis));
+                $variaveis = $variaveis->union(new Set($novasVariaveis));
                 
-                $novasProducoesDir = array();
-                for ($j=1; $j<$tam-1; $j++){
-                    
+                // Gera novas produções a serem adicionadas à gramática
+                $novasProducoes = array();
+                for ($j=0; $j<$tam-2;) {
+                    $novasProducoes[$j] = array(
+                        0 => $novasVariaveis[$j],
+                        1 => new Palavra(array(
+                                $p[1]->getSimbolo($j),
+                                $novasVariaveis[++$j]
+                            )
+                        )
+                    );
                 }
-                $producoes->diff(new Set(array($p)));
+                    // última produção não leva novas variáveis no lado direito (finalizando o encadeamento)
+                $novasProducoes[$j] = array(
+                    0 => $novasVariaveis[$j],
+                    1 => array(
+                        $p[1]->getSimbolo($tam-2),
+                        $p[1]->getSimbolo($tam-1)
+                    )
+                );
+                $producoes = $producoes->diff(new Set(array($p)))->union(new Set($novasProducoes));
             }
         }
+        $gramatica->setVariaveis($variaveis);
+        $gramatica->setProducoes($producoes);
     }
 
 

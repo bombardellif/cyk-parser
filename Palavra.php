@@ -34,6 +34,24 @@ class Palavra {
     }
     
     /**
+     * Dado um índice, retorna o símbolo desta palavra nesse índice.
+     * @param int $i    Índice da palavra
+     * @return string   Símbolo no índice
+     */
+    public function getSimbolo($i) {
+        return $this->palavra[$i];
+    }
+    
+    /**
+     * Escreve um símbolo nesta palavra no índice especificado por $i.
+     * @param int $i    Índice da palavra
+     * @param string $value Símbolo a ser gravado no índice
+     */
+    public function setSimbolo($i, $value) {
+        $this->palavra[$i] = $value;
+    }
+    
+    /**
      * Verifica se esta palavra contem $simbolo, isto é, verifica se a string $simbolo é pertencente à palavra ( ou ainda existe a ocorrência de pelo menos uma instancia de $simbolo na palavra)
      * 
      * @param string $simbolo String que representa um símbolo a ser procurado
