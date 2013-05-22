@@ -99,16 +99,43 @@ class Chomsky {
     }
     
     /**
+     * Retorna um prefixo disponível para criação de novas variáveis na dada gramática
+     * dado um padrão de sufixo (em preg) e um caracter de prefixo incial.
+     * @param Gramatica $gramatica
+     * @param string $charIni   Caracter incial para o prefixo
+     * @param string $regex     Padrão preg para o texto que deve ser livre após o prefixo
+     * @return string   Prefixo para criação de novas variáveis
+     */
+    private static function prefixoParaVariaveis(Gramatica $gramatica, $charIni, $regex) {
+        $iPre = ord($charIni);
+        
+        $continuar = true;
+        while ($continuar) {
+            $continuar = true;
+            $p = chr($iPre++);
+            foreach ($gramatica->getVariaveis()->getData() as $v) {
+                if (preg_match('/^'.$p.$regex.'/', $v) != 1) {
+                    $continuar = false;
+                    break;
+                }
+            }
+        }
+        return $p;
+    }
+    
+    /**
      * Etapa 2 da transformação de uma gramática para a Forma Normal de Chomsky.
      * Transformação do lado direito das produções de comprimento maior ou igual a dois,
      * substituíndo os terminais por variáveis.
      * @param Gramatica $gramatica
      */
-    static function substituiTerminaisPorVariaveis(Gramatica $gramatica) {
+    private static function substituiTerminaisPorVariaveis(Gramatica $gramatica) {
         $producoes = $gramatica->getProducoes();
         $variaveis = $gramatica->getVariaveis();
         $terminais = $gramatica->getTerminais();
-        $prefixo = 'C';  // TODO: DETERMINAR PREFIXO
+        $prefixo = self::prefixoParaVariaveis($gramatica, 'C', '\d+$');
+        // Esse map fornece um número inteiro para cada terminal da gramática
+        $map = array_combine($terminais->getData(), range(1,$terminais->tamanho()));
         
         // para toda produção com lado direto maior ou igual a 2, faça ...
         $novasProds = $producoes->getData();
@@ -118,9 +145,9 @@ class Chomsky {
                 for($r=0; $r<$tam; $r++) {
                     if ($terminais->contains($p[1]->getSimbolo($r))) {
                         // Gera nova produção cujo lado esquerdo é uma nova variável
-                        // e o lado direito é o terminal
+                        // e o lado direito é um número que representa o terminal
                         $novaProducao = array(
-                            0 => new Palavra($prefixo . $p[1]->getSimbolo($r)),
+                            0 => new Palavra($prefixo . $map[$p[1]->getSimbolo($r)]),
                             1 => array(
                                 new Palavra($p[1]->getSimbolo($r))
                             )
@@ -129,7 +156,7 @@ class Chomsky {
                         $variaveis = $variaveis->union(new Set(array(
                             $novaProducao[0]
                         )));
-                        // Substitui o terminal atual pela nova variável no lado direito da produção $p
+                        // Substitui o terminal atual no lado direito da produção $p pela nova variável
                         $p[1]->setSimbolo($r, $novaProducao[0]);
                         // adiciona a nova produção no conjunto de produções da gramática
                         $producoes = $producoes->union(new Set(array(
@@ -149,10 +176,10 @@ class Chomsky {
      * ou igual a 3, em produçẽs com exatamente duas variáveis.
      * @param Gramatica $gramatica
      */
-    static function reduzTamanhoProducoes(Gramatica $gramatica) {
+    private static function reduzTamanhoProducoes(Gramatica $gramatica) {
         $producoes = $gramatica->getProducoes();
         $variaveis = $gramatica->getVariaveis();
-        $prefixo = 'D'; // TODO: Determinar Prefixo
+        $prefixo = self::prefixoParaVariaveis($gramatica, 'D', '\d+$');
         
         foreach ($producoes->getData() as $p) {
             if (($tam = $p[1]->tamanho()) >= 3) {
