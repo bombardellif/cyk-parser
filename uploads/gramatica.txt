@@ -20,5 +20,6 @@ Regras						# (nao reservados) entre chaves. Os elementos do conjunto sao separa
 { V > eats } 				# a fim de definir-se a fronteira entre dois simbolos.
 { DT > a } 				# As regras de producao devem seguir as restricoes de uma GLC.
 { DT > the } 				# Linhas em branco entre as secoes e entre os itens nao serao toleradas.
-{ DT > a , ³, a, the }
+{ DT > NP }
 { NP > ³ }
+{ NP > NP, DT }

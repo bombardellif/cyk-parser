@@ -43,6 +43,17 @@ class Palavra {
         return in_array($simbolo, $this->palavra);
     }
     
+    /**
+     * Remove todas as ocorrências de $simbolo na palavra
+     * 
+     * @param string $simbolo String que representa um símbolo a ser removido
+     * @return void
+     */
+    public function remove($simbolo){
+        $newArray = array_diff($this->palavra, array($simbolo));
+        $this->palavra = array_combine(range(0, count($newArray)-1), $newArray);
+    }
+    
     public function tamanho() {
         return count($this->palavra);
     }

@@ -46,12 +46,23 @@ class Set {
     }
     
     /**
+     * Realiza uma comparação básica entre dois objetos.
+     * @param mixed $a
+     * @param mixed $b
+     * @return int Retorna 0 se os valores $a e $b são igual ($a == $b), 1 caso contrário
+     */
+    static public function compare($a, $b) {
+        return ($a == $b) ? 0 : 1;
+    }
+    
+    /**
      * 
      * @param Set $set  Conjunto para realizar a instersecção com este
      * @return Set  Conjunto após realizada a intersecção
      */
     public function intersect(Set $set) {
-        return new Set(array_intersect($this->data, $set->getData()));
+        
+        return new Set(array_uintersect($this->data, $set->getData(), "Set::compare"));
     }
     
     /**
@@ -70,7 +81,7 @@ class Set {
      * @return Set
      */
     public function diff(Set $set) {
-        return new Set(array_diff($this->data, $set->getData()));
+        return new Set(array_diff($this->data, $set->getData(), "Set::compare"));
     }
     
     /**
@@ -89,7 +100,7 @@ class Set {
      * ($subSet), False caso contrário.
      */
     public function contains(Set $subSet) {
-        return array_intersect($this->data, $subSet->getData()) == $subSet->getData();
+        return array_uintersect($this->data, $subSet->getData(), "Set::compare") == $subSet->getData();
     }    
 }
 

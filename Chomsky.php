@@ -34,21 +34,21 @@ class Chomsky {
                 $V³ = $V³->union(new Set(array($producao[0])));
             }
         }
-        var_dump($V³->getData());
+        
         //Verifica se leva a ³ indiretamente
-        $adicionou = true;
-        while($adicionou){
-            $adicionou = false;
+        $qtdElementos = 0;
+        while($V³->size() > $qtdElementos){
+            $qtdElementos = $V³->size();
             //Ve se cada produção gera alguma palavra cujos simbolos estao em V³
             foreach ($gramaticaSimples->getProducoes()->getData() as $producao){
-                if ($V³->contains(new Set($producao[1]->getConteudo()))){
+                if ($V³->contains(new Set(array($producao[1])))){
                     //Se sim adicona-o a V³
-                    $V³->union($producao[0]);
-                    $adicionou = true;
+                    $V³ = $V³->union(new Set(array($producao[0])));
+                    //var_dump($producao[0]);
                 }
             }
         }
-        var_dump($V³->getData()); exit;
+        var_dump($V³->getData());
         
         ////////Etapa 2\\\\\\\\
         $P1 = new Set();
@@ -60,32 +60,31 @@ class Chomsky {
                 $P1 = $P1->union(new Set(array($producao)));
             }
         }
+        
+        var_dump($P1->getData());
         //Exclusão de produções vazias
-        $adicionou = true;
-        while($adicionou){
-            $adicionou = false;
+        $qtdElementos = 0;
+        while($P1->size() > $qtdElementos){
+            $qtdElementos = $P1->size();
             //Ve se cada produção gera alguma palavra com símbolos que geram o vazio
             foreach ($P1->getData() as $p){
                 foreach($V³->getData() as $x){
-                    if ($p[1]->contem($x) && $p[1]->getConteudo()[0] != $x && $p[1]->getConteudo()[$p['1']->tamanho()-1] != $x){
+                    if ($p[1]->contem($x->getConteudo()[0]) && $p[1] != $x){
                         //Aqui significa que $p leva a uma palavra que contem símbolos que geram o vazio
                         $novoP = array();
                         $novoP[0] = $p[0];
-                        $novoP[0] = $p[1]->remove($x);
+                        $novoP[0] = $p[1]->remove($x->getConteudo()[0]);
                         //Adiciona a nova regra a P1 (sem X)
-                        $P1 = $P1->union(new Set(array($novoP[0])));
-                        $adicionou = true;
+                        $P1 = $P1->union(new Set(array($novoP)));
                         break;
                     }
                 }
-                if ($adicionou){
-                    break;
-                }
             }
         }
+        var_dump($P1->getData()); exit;
         
         //Novo conjunto de produções (simplificado) da gramática
-        $gramaticaSimples->setProducoes($P1);
+        $gramaticaSimples->setProducoes($P1->getData());
         
         return $gramaticaSimples;
     }
@@ -112,7 +111,7 @@ class Chomsky {
         $prefixo = 'C';  // TODO: DETERMINAR PREFIXO
         
         // para toda produção com lado direto maior ou igual a 2, faça ...
-        foreach ($producoes->getData() as &$p) {
+        foreach ($producoes->getData() as $p) {
             if (($tam = $p[1]->tamanho()) >= 2) {
                 // para todos os símbolos terminais do lado direito da produção, faça ...
                 for($r=0; $r<$tam; $r++) {
