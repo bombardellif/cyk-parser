@@ -129,6 +129,8 @@ class Chomsky {
      * @param Gramatica $gramatica
      */
     private static function substituiTerminaisPorVariaveis(Gramatica $gramatica) {
+        $gramatica = clone $gramatica;
+        
         $producoes = $gramatica->getProducoes();
         $variaveis = $gramatica->getVariaveis();
         $terminais = $gramatica->getTerminais();
@@ -167,6 +169,8 @@ class Chomsky {
         }
         $gramatica->setVariaveis($variaveis);
         $gramatica->setProducoes($novasProds->union(new Set($prodsAlteradas)));
+        
+        return $gramatica;
     }
     
     /**
@@ -175,6 +179,8 @@ class Chomsky {
      * @param Gramatica $gramatica
      */
     private static function reduzTamanhoProducoes(Gramatica $gramatica) {
+        $gramatica = clone $gramatica;
+        
         $producoes = $gramatica->getProducoes();
         $variaveis = $gramatica->getVariaveis();
         $prefixo = self::prefixoParaVariaveis($gramatica, 'D', '\d+$');
@@ -219,6 +225,8 @@ class Chomsky {
         }
         $gramatica->setVariaveis($variaveis);
         $gramatica->setProducoes($producoes);
+        
+        return $gramatica;
     }
 
 
@@ -235,17 +243,13 @@ class Chomsky {
         //Simplificações
         $novaGramatica = self::simplificaProducoesVazias($gramatica);
         
-        //$novaGramatica = self::simplificaProducoesSubstituemVariaveis($novaGramatica);
-        echo '<pre>';
-        //var_dump($gramatica);
+        $novaGramatica = self::simplificaProducoesSubstituemVariaveis($novaGramatica);
         
-        self::substituiTerminaisPorVariaveis($gramatica);
-        //var_dump($gramatica);
-        self::reduzTamanhoProducoes($gramatica);
+        // Etapa 2 de conversão para FNC
+        $novagramatica = self::substituiTerminaisPorVariaveis($novaGramatica);
+        // Etapa 2 de conversão para FNC
+        $novaGramatica = self::reduzTamanhoProducoes($novaGramatica);
         
-        var_dump($gramatica);
-        exit;
-        //Faz toda a mágica
         return $novaGramatica;
     }
 }
