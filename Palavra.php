@@ -80,7 +80,7 @@ class Palavra {
      */
     public function remove($simbolo){
         $newArray = array_diff($this->palavra, array($simbolo));
-        return new Palavra(array_combine(range(0, count($newArray)-1), $newArray));
+        return new Palavra(array_values($newArray));
     }
     
     /**
