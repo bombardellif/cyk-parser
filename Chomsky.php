@@ -183,9 +183,9 @@ class Chomsky {
         foreach ($producoes->getData() as $p) {
             if (($tam = $p[1]->tamanho()) >= 3) {
                 // Gera as novas variáveis necessárias para a gramática na FNC
-                    // $p[1]->getSimbolo(0) não é nova variável, porém continuará no conjunto. Colocamos ela nessa array
+                    // $p[0] não é nova variável, porém continuará no conjunto. Colocamos ela nessa array
                     // para entrar como primeira variável no loop da geração de novas produções
-                $novasVariaveis = array(0 => $p[1]->getSimbolo(0)); 
+                $novasVariaveis = array(0 => (string)$p[0]); 
                 for ($i=1; $i<$tam-1; $i++) {
                     $novasVariaveis[$i] = $prefixo . $nVar++;
                 }
@@ -193,12 +193,13 @@ class Chomsky {
                 
                 // Gera novas produções a serem adicionadas à gramática
                 $novasProducoes = array();
-                for ($j=0; $j<$tam-2;) {
+                for ($j=0; $j<$tam-2;$j++) {
+                    
                     $novasProducoes[$j] = array(
                         0 => new Palavra($novasVariaveis[$j]),
                         1 => new Palavra(array(
                                 $p[1]->getSimbolo($j),
-                                $novasVariaveis[++$j]
+                                $novasVariaveis[$j+1]
                             )
                         )
                     );
@@ -236,10 +237,10 @@ class Chomsky {
         
         //$novaGramatica = self::simplificaProducoesSubstituemVariaveis($novaGramatica);
         echo '<pre>';
-        var_dump($gramatica);
+        //var_dump($gramatica);
         
         self::substituiTerminaisPorVariaveis($gramatica);
-        var_dump($gramatica);
+        //var_dump($gramatica);
         self::reduzTamanhoProducoes($gramatica);
         
         var_dump($gramatica);

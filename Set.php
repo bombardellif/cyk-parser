@@ -135,7 +135,7 @@ class Set {
         // O codigo acima não funciona (maneira antiga)
         // =================
         // A contém B, se e somente se, B - A = 0
-        return array_udiff($subSet, $this->data, "Set::compareElems") == array();
+        return array_udiff($subSet->getData(), $this->data, "Set::compareElems") == array();
     }    
 }
 
