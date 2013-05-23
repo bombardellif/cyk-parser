@@ -112,7 +112,7 @@ class Chomsky {
             while ($v = array_pop($pilha)){
                 foreach($gramaticaSimples->getProducoes()->getData() as $p){
                     //Avalia todas as produções que partem de $v, verifica se não leva à própria $variavel, se é do tipo X -> Y e finalmente se já não incluiu no fecho ...
-                    if ($p[0] == new Palavra($v) && $p[1] != new Palavra($variavel) && $p[1]->tamanho() == 1 && $gramaticaSimples->getVariaveis()->belongs((String)$p[1]) && !$fecho[$variavel]->belongs((String)$p[1])){
+                    if ($p[0] == new Palavra($v) && $p[1] != new Palavra($variavel) && $p[1]->tamanho() == 1 && $gramaticaSimples->getVariaveis()->has((String)$p[1]) && !$fecho[$variavel]->has((String)$p[1])){
                         //Se passou então adiciona ao fecho
                         $fecho[$variavel] = $fecho[$variavel]->union(new Set(array((String)$p[1])));
                         //E adiciona à pilha para ela ser processada
@@ -125,7 +125,7 @@ class Chomsky {
         //Etapa 2 - Exclusão das variáveis que substituem variáveis
         $P1 = new Set();
         foreach($gramaticaSimples->getProducoes()->getData() as $p){
-            if ( !$gramaticaSimples->getVariaveis()->belongs((String)$p[1]) ){
+            if ( !$gramaticaSimples->getVariaveis()->has((String)$p[1]) ){
                 $P1 = $P1->union(new Set(array($p)));
             }
         }
@@ -133,7 +133,7 @@ class Chomsky {
         foreach($gramaticaSimples->getVariaveis()->getData() as $A){
             foreach($fecho[$A]->getData() as $B){
                 foreach($gramaticaSimples->getProducoes()->getData() as $p){
-                    if ($p[0] == new Palavra($B) && !$gramaticaSimples->getVariaveis()->belongs($p[1])){
+                    if ($p[0] == new Palavra($B) && !$gramaticaSimples->getVariaveis()->has($p[1])){
                         $newP = array();
                         $newP[0] = new Palavra($A);
                         $newP[1] = $p[1];
