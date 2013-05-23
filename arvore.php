@@ -1,7 +1,9 @@
 <?php
 
-define("ESPACO_NODO", 36); 		// espaçamento entre nodos
+define("ESPACO_NODO", 64); 		// espaçamento entre nodos
 define("ESPACO_NIVEL", 50); 	// espaçamento entre níveis
+define("RAIO_NODO", 20);		// raio dos nodos
+define("BORDA_DESENHO", 30);	// borda para o desenho nao ser cortado (na esquerda e em cima)
 
 class Nodos
 {
@@ -63,21 +65,25 @@ class Nodos
 		return count($this->_arrFilhos);
 	}
 	/* imprimeBola(x, y)
-		Retorna uma string HTML que imprime um círculo de raio 10 com centro em (x, y) */
+		Retorna uma string HTML que imprime um círculo de raio 10 com centro em (x, y) e dentro do círculo,
+		imprime o nomo do respectivo nodo.*/
 	public function imprimeBola($cx, $cy)
 	{
-		$cx += 20;
-		$cy += 20;
-		return "<circle cx='$cx' cy='$cy' r='10' stroke='red' stroke-width='2' fill='white' />\n";
+		$cx += BORDA_DESENHO;
+		$cy += BORDA_DESENHO;
+		$r = RAIO_NODO;
+		echo "<circle cx='$cx' cy='$cy' r='$r' stroke='red' stroke-width='2' fill='white' />\n";
+		$cy += 7.5;
+		echo "<text x='$cx' y='$cy' font-family='sans-serif' font-size='20px' text-anchor='middle' fill='black'>$this->_nome</text>";
 	}
 	/* imprimeLinha((x0, y0), (x1, y1))
 		Imprime na tela uma linha de espessura 2px com extremidades em [x0, y0] e [x1, y1] */
 	public function imprimeLinha($x0, $y0, $x1, $y1)
 	{
-		$x0 += 20;
-		$y0 += 20;
-		$x1 += 20;
-		$y1 += 20;
+		$x0 += BORDA_DESENHO;
+		$y0 += BORDA_DESENHO;
+		$x1 += BORDA_DESENHO;
+		$y1 += BORDA_DESENHO;
 		echo "<line x1='$x0' y1='$y0' x2='$x1' y2='$y1' style='stroke: rgb(255,0,0); stroke-width: 2;'/>\n";
 	}	
 	/* imprimeNodos(nivel, espaco, largura)
@@ -89,7 +95,7 @@ class Nodos
 	{
 		$bola_x = ($largura / 2) + $espaco_h; 	// média da largura + espaço
 		$bola_y = $nivel * ESPACO_NIVEL; 		// em relação ao nível
-		$bola = $this->imprimeBola($bola_x, $bola_y);
+		//$bola = 
 		
 		if(count($this->_arrFilhos) != 0)
 			$mediaLarguraFilho = $largura / count($this->_arrFilhos);
@@ -101,7 +107,7 @@ class Nodos
 			$espaco_h += $mediaLarguraFilho;																		// adiciona espaçamento
 		}
 		
-		echo $bola; // imprime as bolas no final para aparecerem sobrepostas
+		$this->imprimeBola($bola_x, $bola_y); // imprime as bolas no final para aparecerem sobrepostas às linhas
 	}
 }
 
@@ -157,17 +163,17 @@ $teste5 = new Nodos("A",
 					new Nodos("F"),
 					new Nodos("G")))));
 $teste6 = new Nodos("A", array(new Nodos("B", array(new Nodos("F"), new Nodos("G"))), new Nodos("C", array(new Nodos("H"), new Nodos("I"))), new Nodos("D", array(new Nodos("J"), new Nodos("K"))), new Nodos("E", array(new Nodos("L"), new Nodos("M")))));
-$teste7 = new Nodos("A", 
+$teste7 = new Nodos("ABC", 
 			array(
-			new Nodos("B",
+			new Nodos("BC",
 				array(
 					new Nodos("D", array(new Nodos("H", array(new Nodos("H"), new Nodos("I"))), new Nodos("I", array(new Nodos("H"), new Nodos("I"))))),
 					new Nodos("E", array(new Nodos("H", array(new Nodos("H"), new Nodos("I"))), new Nodos("I", array(new Nodos("H"), new Nodos("I"))))))), 
-			new Nodos("B",
+			new Nodos("BD",
 				array(
 					new Nodos("D", array(new Nodos("H", array(new Nodos("H"), new Nodos("I"))), new Nodos("I", array(new Nodos("H"), new Nodos("I"))))),
 					new Nodos("E", array(new Nodos("H", array(new Nodos("H"), new Nodos("I"))), new Nodos("I", array(new Nodos("H"), new Nodos("I"))))))), 
-			new Nodos("C",
+			new Nodos("CD",
 				array(
 					new Nodos("D", array(new Nodos("H", array(new Nodos("H"), new Nodos("I"))), new Nodos("I", array(new Nodos("H"), new Nodos("I"))))),
 					new Nodos("E", array(new Nodos("H", array(new Nodos("H"), new Nodos("I"))), new Nodos("I", array(new Nodos("H"), new Nodos("I")))))))));
