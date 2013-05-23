@@ -181,36 +181,38 @@ class Chomsky {
      * @param Gramatica $gramatica
      */
     private static function substituiTerminaisPorVariaveis(Gramatica $gramatica) {
+        $gramatica = clone $gramatica;
+        
         $producoes = $gramatica->getProducoes();
         $variaveis = $gramatica->getVariaveis();
         $terminais = $gramatica->getTerminais();
         $prefixo = self::prefixoParaVariaveis($gramatica, 'C', '\d+$');
         // Esse map fornece um número inteiro para cada terminal da gramática
-        $map = array_combine($terminais->getData(), range(1,$terminais->tamanho()));
+        $map = array_combine($terminais->getData(), range(1,$terminais->size()));
         
         // para toda produção com lado direto maior ou igual a 2, faça ...
-        $novasProds = $producoes->getData();
-        foreach ($novasProds as &$p) {
+        $novasProds = new Set();
+        $prodsAlteradas = $producoes->getData();
+        foreach ($prodsAlteradas as &$p) {
             if (($tam = $p[1]->tamanho()) >= 2) {
                 // para todos os símbolos terminais do lado direito da produção, faça ...
                 for($r=0; $r<$tam; $r++) {
-                    if ($terminais->contains($p[1]->getSimbolo($r))) {
+                    
+                    if ($terminais->has($p[1]->getSimbolo($r))) {
                         // Gera nova produção cujo lado esquerdo é uma nova variável
                         // e o lado direito é um número que representa o terminal
                         $novaProducao = array(
                             0 => new Palavra($prefixo . $map[$p[1]->getSimbolo($r)]),
-                            1 => array(
-                                new Palavra($p[1]->getSimbolo($r))
-                            )
+                            1 => new Palavra($p[1]->getSimbolo($r))
                         );
                         // adiciona a nova variável ao conjunto de variáveis da gramática
                         $variaveis = $variaveis->union(new Set(array(
-                            $novaProducao[0]
+                            (string)$novaProducao[0]
                         )));
                         // Substitui o terminal atual no lado direito da produção $p pela nova variável
-                        $p[1]->setSimbolo($r, $novaProducao[0]);
+                        $p[1]->setSimbolo($r, (string)$novaProducao[0]);
                         // adiciona a nova produção no conjunto de produções da gramática
-                        $producoes = $producoes->union(new Set(array(
+                        $novasProds = $novasProds->union(new Set(array(
                             $novaProducao
                         )));
                     }
@@ -218,8 +220,9 @@ class Chomsky {
             }
         }
         $gramatica->setVariaveis($variaveis);
-        $producoes->setData($novasProds);
-        $gramatica->setProducoes($producoes);
+        $gramatica->setProducoes($novasProds->union(new Set($prodsAlteradas)));
+        
+        return $gramatica;
     }
     
     /**
@@ -228,46 +231,54 @@ class Chomsky {
      * @param Gramatica $gramatica
      */
     private static function reduzTamanhoProducoes(Gramatica $gramatica) {
+        $gramatica = clone $gramatica;
+        
         $producoes = $gramatica->getProducoes();
         $variaveis = $gramatica->getVariaveis();
         $prefixo = self::prefixoParaVariaveis($gramatica, 'D', '\d+$');
         
+        $nVar = 1;
         foreach ($producoes->getData() as $p) {
             if (($tam = $p[1]->tamanho()) >= 3) {
                 // Gera as novas variáveis necessárias para a gramática na FNC
-                    // $p[1]->getSimbolo(0) não é nova variável, porém continuará no conjunto. Colocamos ela nessa array
+                    // $p[0] não é nova variável, porém continuará no conjunto. Colocamos ela nessa array
                     // para entrar como primeira variável no loop da geração de novas produções
-                $novasVariaveis = array(0 => $p[1]->getSimbolo(0)); 
+                $novasVariaveis = array(0 => (string)$p[0]); 
                 for ($i=1; $i<$tam-1; $i++) {
-                    $novasVariaveis[$i] = new Palavra($prefixo . $i);
+                    $novasVariaveis[$i] = $prefixo . $nVar++;
                 }
                 $variaveis = $variaveis->union(new Set($novasVariaveis));
                 
                 // Gera novas produções a serem adicionadas à gramática
                 $novasProducoes = array();
-                for ($j=0; $j<$tam-2;) {
+                for ($j=0; $j<$tam-2;$j++) {
+                    
                     $novasProducoes[$j] = array(
-                        0 => $novasVariaveis[$j],
+                        0 => new Palavra($novasVariaveis[$j]),
                         1 => new Palavra(array(
                                 $p[1]->getSimbolo($j),
-                                $novasVariaveis[++$j]
+                                $novasVariaveis[$j+1]
                             )
                         )
                     );
                 }
                     // última produção não leva novas variáveis no lado direito (finalizando o encadeamento)
                 $novasProducoes[$j] = array(
-                    0 => $novasVariaveis[$j],
-                    1 => array(
+                    0 => new Palavra($novasVariaveis[$j]),
+                    1 => new Palavra(array(
                         $p[1]->getSimbolo($tam-2),
                         $p[1]->getSimbolo($tam-1)
+                        )
                     )
                 );
+                
                 $producoes = $producoes->diff(new Set(array($p)))->union(new Set($novasProducoes));
             }
         }
         $gramatica->setVariaveis($variaveis);
         $gramatica->setProducoes($producoes);
+        
+        return $gramatica;
     }
 
 
@@ -286,11 +297,11 @@ class Chomsky {
         
         $novaGramatica = self::simplificaProducoesSubstituemVariaveis($novaGramatica);
         
-        //$novaGramatica = self::substituiTerminaisPorVariaveis($gramatica);
+        // Etapa 2 de conversão para FNC
+        $novagramatica = self::substituiTerminaisPorVariaveis($novaGramatica);
+        // Etapa 2 de conversão para FNC
+        $novaGramatica = self::reduzTamanhoProducoes($novaGramatica);
         
-        //$novaGramatica = self::reduzTamanhoProducoes($gramatica);
-        
-        //Faz toda a mágica
         return $novaGramatica;
     }
 }
