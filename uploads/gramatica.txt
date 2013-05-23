@@ -5,10 +5,9 @@ Variaveis
 Inicial					
 { S }							# Os simbolos terminais sao qualquer sequencia de caracteres 
 Regras						# (nao reservados) entre chaves. Os elementos do conjunto sao separados por virgula.
-{ S > a,S }			# A secao de simbolos terminais inicia com a palavra-chave "Terminais".
-{ S > b,A }				# Eh altamente recomendavel que simbolos terminais iniciem por caracteres minusculos.
-{ S > B } 				# Simbolos nao podem conter os caracteres "{", "}", "#" ou ">", por serem reservados
-{ B > a,A }
-{ B > S }
-{A>a,A,b }
-{ A > S,B }
+{ S > A,A }			# A secao de simbolos terminais inicia com a palavra-chave "Terminais".
+{ S > b }				# Eh altamente recomendavel que simbolos terminais iniciem por caracteres minusculos.
+{ S > A,S } 				# Simbolos nao podem conter os caracteres "{", "}", "#" ou ">", por serem reservados
+{ A > S,A }
+{ A > A,S }
+{ A > a }
