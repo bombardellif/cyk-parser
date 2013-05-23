@@ -34,7 +34,8 @@ class Set {
      * @param array $data A array com os dados (não verifica se há valores duplicados)
      */
     public function setData(Array $data) {
-        $this->data = $data;
+        // array_values: devolve uma array cujos índices são numéricos começando em zero.
+        $this->data = array_values($data);
     }
     
     /**
@@ -51,7 +52,7 @@ class Set {
      * @return Set  Conjunto após realizada a intersecção
      */
     public function intersect(Set $set) {
-        return new Set(array_intersect($this->data, $set->getData()));
+        return new Set(array_uintersect($this->data, $set->getData(), "Set::compareElems"));
     }
     
     /**
@@ -64,13 +65,53 @@ class Set {
     }
     
     /**
+     * <p>Função usada como callback para outras funções do php.
+     * Retorna um número menor que zero se $a < $b, zero se $a == $b, e um número
+     * maior que zero se $a > b.</p>
+     * <p>Foi construída para poder comparar duas arrays (independente de seus tamanhos)
+     * , assim como uma array com outro tipo de dado (desde que possível de  realizar 
+     * casting para string).</p>
+     * <p>Notar que só funciona para arrays com índices numerados a partir de 0 de
+     * forma crescente, incrementados em 1.</p>
+     * @param mixed $a  Elemento a comparar
+     * @param mixed $b  Elemento a comparar
+     * @return int      
+     */
+    public static function compareElems($a, $b) {
+        if (is_array($a) || is_array($b)) {
+            // Se ao menos uma for um array, compara ellemento a elemento recursivamente
+            // realiza casting dos dois parâmetros para array, pois se um deles já não for,
+            // então o casting criará um array onde o elemento 0 é o elemento "casted"
+            $a = (array)$a;
+            $b = (array)$b;
+            $tamA = count($a); 
+            $tamB = count($b);
+            $limite = min(array($tamA, $tamB));
+            // verifica elemento a elemento recursivamente a comparação dos arrays
+            // enquanto forem iguais ou chegar ao final da menor em tamanho.
+            // Se chegar ao final do menor array, então retorna a última comparação,
+            // Se chegar em uma comparação de elementos diferente, então não precisa
+            // continuar a comparação, retorna o valor dessa última comparação.
+            $retorno = 0;
+            for ($i=0; $i<$limite; $i++) {
+                if (($retorno = Set::compareElems($a[$i], $b[$i])) != 0) {
+                    break;
+                }
+            }
+            return $retorno;
+        } else {
+            return strcmp((string)$a, (string)$b);
+        }
+    }
+    
+    /**
      * 
      * @param Set $set  Conjunto para subtrarir com este (ou seja, o operador da
      *                  direta da operação)
      * @return Set
      */
     public function diff(Set $set) {
-        return new Set(array_diff($this->data, $set->getData()));
+        return new Set(array_udiff($this->data, $set->getData(), "Set::compareElems"));
     }
     
     /**
@@ -78,7 +119,7 @@ class Set {
      * @param mixed $element    Elemento para verificar se pertence a este conjunto
      * @return bool True se o elemento pertence ao conjunto, False caso contrário.
      */
-    public function belongs($element) {
+    public function has($element) {
         return in_array($element, $this->data);
     }
     
@@ -90,7 +131,11 @@ class Set {
      */
     public function contains(Set $subSet) {
         //A contem B, se e somente se, (A e B) - B = 0
-        return array_diff(array_intersect($this->data, $subSet->getData()), $subSet->getData()) == array();
+        //return array_diff(array_intersect($this->data, $subSet->getData()), $subSet->getData()) == array();
+        // O codigo acima não funciona (maneira antiga)
+        // =================
+        // A contém B, se e somente se, B - A = 0
+        return array_udiff($subSet, $this->data, "Set::compareElems") == array();
     }    
 }
 

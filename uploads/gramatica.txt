@@ -1,14 +1,11 @@
 Terminais					# A secao de simbolos terminais eh a primeira do arquivo.
-{ S,X,Y }	# Tudo o que estiver apos o sustenido (#)  sera considerado comentario. 
+{ +, *, [, ], x }	# Tudo o que estiver apos o sustenido (#)  sera considerado comentario. 
 Variaveis				    	
-{ a,b}			  	
+{ E }			  	
 Inicial					
-{ S }							# Os simbolos terminais sao qualquer sequencia de caracteres 
+{ E }							# Os simbolos terminais sao qualquer sequencia de caracteres 
 Regras						# (nao reservados) entre chaves. Os elementos do conjunto sao separados por virgula.
-{ S > a , X,a }			# A secao de simbolos terminais inicia com a palavra-chave "Terminais".
-{ S > b,X,b }				# Eh altamente recomendavel que simbolos terminais iniciem por caracteres minusculos.
-{ S > ³ } 				# Simbolos nao podem conter os caracteres "{", "}", "#" ou ">", por serem reservados
-{ X > a } 				  	# A secao de variaveis inicia por "Variaveis", e eh a segunda do arquivo
-{ X > b } 				# Note que a sintaxe eh case-sensitive, isto eh, maiusculas e minusculas sao 
-{ X > Y } 				# diferenciadas. Nao usar acentos para que o uso em outras plataformas nao 	
-{ Y > ³ }	 
+{ E > E,+,E }			# A secao de simbolos terminais inicia com a palavra-chave "Terminais".
+{ E > E,*,E }				# Eh altamente recomendavel que simbolos terminais iniciem por caracteres minusculos.
+{ E > [,E,] } 				# Simbolos nao podem conter os caracteres "{", "}", "#" ou ">", por serem reservados
+{ E > x } 				  	# A secao de variaveis inicia por "Variaveis", e eh a segunda do arqu
