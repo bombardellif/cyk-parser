@@ -61,15 +61,21 @@ function bootstrap(){
             $view['frase'] = $_REQUEST['frase'];
 
             //Envia pra view a gramatica
-            $view['gramatica'] = $gramatica;
+            $view['gramaticaOriginal'] = $gramatica;
             
             //Converte para Chomsky
             $gramaticaChomsky = Chomsky::getChomsky($gramatica);
             
-            //
+            $view['gramaticaChomsky'] = $gramaticaChomsky;
+            
+            //Gera árvores de Derivação (algoritmo de parsing)
+            $frase = preg_split ("/[,{}\b\n\r\s#]/", $_REQUEST['frase'], NULL, PREG_SPLIT_NO_EMPTY);
+            $arvores = $gramaticaChomsky->geraArvoresDerivacao(new Palavra($frase));
+            
+            $view['arvores'] = $arvores;
             
             //Aqui testa se a frase faz parte da linguagem (se frase pertence a ACEITA($gramatica))
-            
+            $view['aceita'] = $gramaticaChomsky->aceita($arvores);
 
             include 'views/veResultado.php';
             

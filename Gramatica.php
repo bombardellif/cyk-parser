@@ -11,6 +11,11 @@ require_once './Set.php';
 require_once './Palavra.php';
 
 /**
+ * Arvores para a derivação
+ */
+require_once './arvore.php';
+
+/**
  * Exceções Utilizadas
  */
 require_once './LeituraArquivoGramaticaException.php';
@@ -185,7 +190,7 @@ class Gramatica {
      * @param string $linha Linha do arquivo a ser avalidada.
      * @return boolean True se a linha é do modelo "$stringDef   # XXXXX", False caso contrário 
      */
-    public function isLinhaDef($stringDef, $linha){
+    private function isLinhaDef($stringDef, $linha){
         $regex = "/^$stringDef\s*((\s#).*)?/";
         return preg_match($regex, $linha) == 1;
     }
@@ -196,7 +201,7 @@ class Gramatica {
      * @param string $linha Linha do arquivo a ser avalidada.
      * @return boolean True se a linha é do modelo "{A, B , C,D, ...}   # XXXXX", False caso contrário 
      */
-    public function isLinhaSet($linha){
+    private function isLinhaSet($linha){
         $regex = "/^(({\s*})|({\s*((?![,{}\b\n\r\s#]).)+(\s*,\s*((?![,{}\b\n\r\s#]).)+)*\s*}))\s*((\s#).*)?$/";
         return preg_match($regex, $linha) == 1;
     }
@@ -207,7 +212,7 @@ class Gramatica {
      * @param string $linha Linha do arquivo a ser avalidada.
      * @return boolean True se a linha é do modelo "{S}   # XXXXX", False caso contrário 
      */
-    public function isLinhaSimbolo($linha){
+    private function isLinhaSimbolo($linha){
         $regex = "/^({\s*((?![,{}\b\n\r\s#]).)+\s*})\s*((\s#).*)?$/";
         return preg_match($regex,$linha) == 1;
     }
@@ -218,8 +223,8 @@ class Gramatica {
      * @param string $linha Linha do arquivo a ser avalidada.
      * @return boolean True se a linha é do modelo "{ S > V, W, ..., Z }  # XXXXX", False caso contrário 
      */
-    public function isLinhaRegra($linha){
-        $regex = "/^{\s*((?![,{}\b\n\r\s#]).)+\s*>\s*((?![,{}\b\n\r\s#]).)+(\s*,\s*((?![,{}\b\n\r\s#]).)+)*\s}\s*((\s#).*)?$/";
+    private function isLinhaRegra($linha){
+        $regex = "/^{\s*((?![,{}\b\n\r\s#]).)+\s*>\s*((?![,{}\b\n\r\s#]).)+(\s*,\s*((?![,{}\b\n\r\s#]).)+)*\s*}\s*((\s#).*)?$/";
         return preg_match($regex,$linha) == 1;
     }
     
@@ -232,7 +237,7 @@ class Gramatica {
      * @return Set Conjunto com os itens lidos da linha (Set de Símbolos)
      * @see isLinhaSet
      */
-    public function criaSet($linha){
+    private function criaSet($linha){
         $set = new Set();
         
         //Pega só a parte até o fecha chaves, ignorando tudo após isto (espaços e comentários)
@@ -262,7 +267,7 @@ class Gramatica {
      * @return Palavra Palavra criada a partir do símbolo lido
      * @see isLinhaSimbolo
      */
-    public function criaPalavra($linha){
+    private function criaPalavra($linha){
         //Pega só a parte até o fecha chaves, ignorando tudo após isto (espaços e comentários)
         $linha = substr($linha, 0, strpos($linha, "}")+1);
         
@@ -283,7 +288,7 @@ class Gramatica {
      * @return array Array de dois elementos do modelo: array([0] => X, [1] => Y), onde X é uma palavra de um único símbolo (Livre do contexto) e Y é uma palavra qualquer, assim retorna um par ordenado que representa a regra lida da $linha
      * @see isLinhaRegra
      */
-    public function criaRegra($linha){
+    private function criaRegra($linha){
         
         //Pega só a parte até o fecha chaves, ignorando tudo após isto (espaços e comentários)
         $linha = substr($linha, 0, strpos($linha, "}")+1);
@@ -307,6 +312,40 @@ class Gramatica {
         $regra[0] = new Palavra($palavraEsquerda);
         $regra[1] = new Palavra($palavraDireita);
         return $regra;
+    }
+    
+    /**
+     * Gera uma string de saída formatada a partir dos atributos da gramática
+     * @return String Saída formatada
+     */
+    public function saidaFormatada(){
+        $saida = "<span>Terminais:</span> {". implode(", ", $this->getTerminais()->getData()) ."}</br>";
+        $saida .= "<span>Variáveis:</span> {". implode(", ", $this->getVariaveis()->getData()) ."}</br>";
+        $saida .= "<span>Inicial:</span> ". $this->getInicial() . "</br>";
+        $saida .= "<span>Regras:</span> {";
+        
+        foreach ($this->getProducoes()->getData() as $p){
+            $saida .= $p[0] ." > ". $p[1] . "; &nbsp;&nbsp;";
+        }
+        $saida .= "}</br>";
+        
+        return $saida;
+    }
+    
+    /**
+     * Gera todas as árvores de derivação (afora de isomorfismos) da $palavra enviada sobre a gramática, 
+     * executando o algoritmo de parsing.
+     * 
+     * @param Palavra $palavra Palavra a ser avaliada
+     * @return array Array de Árvores (Array de Objetos Arvore)
+     * @see Arvore
+     */
+    public function geraArvoresDerivacao(Palavra $palavra){
+        
+    }
+    
+    public function aceita($arvores){
+        
     }
     
 }

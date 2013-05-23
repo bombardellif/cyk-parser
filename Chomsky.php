@@ -19,7 +19,7 @@ class Chomsky {
      * @param Gramatica $gramatica A gramática a ser simplificada
      * @return Gramatica Uma nova gramática simplificada, isto é, não modifica a gramática de entrada
      */
-    static function simplificaProducoesVazias(Gramatica $gramatica){
+    private static function simplificaProducoesVazias(Gramatica $gramatica){
         
         //Clona para não modifica fonte
         $gramaticaSimples = clone $gramatica;
@@ -95,7 +95,7 @@ class Chomsky {
      * @param Gramatica $gramatica A gramática a ser simplificada
      * @return Gramatica A gramática simplificada
      */
-    static function simplificaProducoesSubstituemVariaveis(Gramatica $gramatica){
+    private static function simplificaProducoesSubstituemVariaveis(Gramatica $gramatica){
         
         //Clona para não modifica fonte
         $gramaticaSimples = clone $gramatica;
@@ -285,6 +285,10 @@ class Chomsky {
         $novaGramatica = self::simplificaProducoesVazias($gramatica);
         
         $novaGramatica = self::simplificaProducoesSubstituemVariaveis($novaGramatica);
+        
+        //$novaGramatica = self::substituiTerminaisPorVariaveis($gramatica);
+        
+        //$novaGramatica = self::reduzTamanhoProducoes($gramatica);
         
         //Faz toda a mágica
         return $novaGramatica;
