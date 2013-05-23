@@ -25,13 +25,13 @@ require_once './ParseArquivoGramaticaException.php';
 class Gramatica {
     /**
      *
-     * @var Set Conjunto das variáveis da gramática
+     * @var Set Conjunto das variáveis da gramática (Set de Símbolos)
      */
     private $variaveis;
     
     /**
      *
-     * @var Set Conjunto dos terminais da gramática
+     * @var Set Conjunto dos terminais da gramática (Set de Símbolos)
      */
     private $terminais;
     
@@ -229,7 +229,7 @@ class Gramatica {
      * delimitado pelas chaves "{" e "}"
      * 
      * @param string $linha Linha do arquivo a ser avalidada.
-     * @return Set Conjunto com os itens lidos da linha
+     * @return Set Conjunto com os itens lidos da linha (Set de Símbolos)
      * @see isLinhaSet
      */
     public function criaSet($linha){

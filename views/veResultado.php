@@ -9,6 +9,7 @@
         Frase: <?php echo $view['frase']; ?><br />
 
         <br /><br />
+        
         <?php var_dump($view['gramatica']); ?>
         <br /><br />
         resultado aqui
