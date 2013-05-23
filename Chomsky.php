@@ -89,12 +89,64 @@ class Chomsky {
     }
     
     /**
-     * Simplifica a $gramatica, retirando produções que substituem variáveis diretamento (na forma A -> B), segundo o algorítmo do livro "Linguagens Formais e Autômato" de Paulo Blauth Menezes
+     * Simplifica a $gramatica, retirando produções que substituem variáveis diretamente (na forma A -> B), segundo o algorítmo do livro "Linguagens Formais e Autômato" de Paulo Blauth Menezes.
+     * Supõe que $gramatica é Livre do Contexto e não a modifica, ou seja, retorna uma nova gramática.
+     * 
      * @param Gramatica $gramatica A gramática a ser simplificada
      * @return Gramatica A gramática simplificada
      */
     static function simplificaProducoesSubstituemVariaveis(Gramatica $gramatica){
         
+        //Clona para não modifica fonte
+        $gramaticaSimples = clone $gramatica;
+
+        //Etapa 1 - Fecho Transitivo de cada Variável
+        $fecho = array();
+        foreach($gramaticaSimples->getVariaveis()->getData() as $variavel){
+            $fecho[$variavel] = new Set();
+            
+            $pilha = array();
+            array_push($pilha, $variavel);
+            
+            //Imagine que as produções formam um grafo, onde os vértices são as palavras das produções e dois vértices V e W são adjacentes se exisste uma produção (V -> W), assim temos que fazer um caminhamento no grafo adicionando ao fecho por onde passamos.
+            while ($v = array_pop($pilha)){
+                foreach($gramaticaSimples->getProducoes()->getData() as $p){
+                    //Avalia todas as produções que partem de $v, verifica se não leva à própria $variavel, se é do tipo X -> Y e finalmente se já não incluiu no fecho ...
+                    if ($p[0] == new Palavra($v) && $p[1] != new Palavra($variavel) && $p[1]->tamanho() == 1 && $gramaticaSimples->getVariaveis()->belongs((String)$p[1]) && !$fecho[$variavel]->belongs((String)$p[1])){
+                        //Se passou então adiciona ao fecho
+                        $fecho[$variavel] = $fecho[$variavel]->union(new Set(array((String)$p[1])));
+                        //E adiciona à pilha para ela ser processada
+                        array_push($pilha, (String)$p[0]);
+                    }
+                }
+            }   
+        }
+        
+        //Etapa 2 - Exclusão das variáveis que substituem variáveis
+        $P1 = new Set();
+        foreach($gramaticaSimples->getProducoes()->getData() as $p){
+            if ( !$gramaticaSimples->getVariaveis()->belongs((String)$p[1]) ){
+                $P1 = $P1->union(new Set(array($p)));
+            }
+        }
+        
+        foreach($gramaticaSimples->getVariaveis()->getData() as $A){
+            foreach($fecho[$A]->getData() as $B){
+                foreach($gramaticaSimples->getProducoes()->getData() as $p){
+                    if ($p[0] == new Palavra($B) && !$gramaticaSimples->getVariaveis()->belongs($p[1])){
+                        $newP = array();
+                        $newP[0] = new Palavra($A);
+                        $newP[1] = $p[1];
+                        $P1 = $P1->union(new Set(array($newP)));
+                    }
+                }
+            }
+        }
+        
+        //Novas produções, gramática está simplificada
+        $gramaticaSimples->setProducoes($P1);
+        
+        return $gramaticaSimples;
     }
     
     /**
