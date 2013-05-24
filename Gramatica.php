@@ -332,22 +332,6 @@ class Gramatica {
         return $saida;
     }
     
-    /**
-     * Gera todas as árvores de derivação (afora de isomorfismos) da $palavra enviada sobre a gramática, 
-     * executando o algoritmo de parsing.
-     * 
-     * @param Palavra $palavra Palavra a ser avaliada
-     * @return array Array de Árvores (Array de Objetos Arvore)
-     * @see Arvore
-     */
-    public function geraArvoresDerivacao(Palavra $palavra){
-        
-    }
-    
-    public function aceita($arvores){
-        
-    }
-    
 }
 
 ?>

@@ -31,6 +31,10 @@
         
         <br /><br />
         
+        Tabela do Algoritmo CYK: <?php var_dump($view['tabelaCYK']); ?>
+        
+        <br /><br />
+        
         Árvores: <?php var_dump($view['arvores']); ?>
     </body>
 </html>
