@@ -38,10 +38,12 @@
         
         <br /><br />
         
-        Tabela do Algoritmo CYK: <?php echo '<pre>';var_dump($view['tabelaCYK']);echo '</pre>'; ?>
-        
-        <br /><br />
-        
-        Árvores: <?php var_dump($view['arvores']); ?>
+        <?php if ($view['aceita'] !== null): ?>
+            Tabela do Algoritmo CYK: <?php echo '<pre>';var_dump($view['tabelaCYK']);echo '</pre>'; ?>
+
+            <br /><br />
+
+            Árvores: <?php var_dump($view['arvores']); ?>
+        <?php endif; ?>
     </body>
 </html>
