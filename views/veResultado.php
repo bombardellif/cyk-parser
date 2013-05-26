@@ -28,9 +28,9 @@
         <br /><br />
         
         Resultado: 
-        <?php if (isset($view['aceita']) &&  $view['aceita'] == true): ?>
+        <?php if (isset($view['aceita']) &&  $view['aceita'] === true): ?>
             <span class="green">A frase foi aceita.</span>
-        <?php elseif ($view['aceita'] == null): ?>
+        <?php elseif ($view['aceita'] === null): ?>
             <span class="yellow">A frase é vazia (não aplica CYK).</span>
         <?php else: ?>
             <span class="red">A frase foi rejeitada.</span>
