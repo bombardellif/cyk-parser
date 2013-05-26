@@ -50,7 +50,45 @@ class Parser {
         }
         
         //Etapa 2
-        
+        for ($s=2; $s<$n; $s++) {
+            for ($r=1, $lim=$n-$s+1; $r<$lim; $r++) {
+                $this->tabela->set($r, $s, new CelulaCyk(new Set()));
+                // Repete a "roldana"
+                for ($k=1; $k<$s-1; $k++) {
+                    // Itera nas variáveis de uma célula na coluna abaixo dessa célula
+                    foreach ($this->tabela->get($r, $k)->getVariaveis()->getData() as $Vrk) {
+                        // Itera nas variáveis de uma célula na diagonal abaixo e a esquerda dessa célula
+                        foreach ($this->tabela->get($r+$k, $s-$k)->getVariaveis()->getData() as $Vrksk) {
+                            // Itera nas Produções
+                            foreach ($this->gramatica->getProducoes()->getData() as $p) {
+                                if ($p[1] == new Palavra(array($Vrk, $Vrksk))) {
+                                    $celula = $this->tabela->get($r, $s);
+                                    // Une a variável do lado esquerdo dessa produção ao conjunto das variáveis
+                                    // contidas na célula atual
+                                    $celula->setVariaveis(
+                                            $celula->getVariaveis()->union(new Set(array($p[0]))));
+                                    // Une no conjunto de combinações, dessa célula, uma nova combinação formada 
+                                    // a partir da regra que acabamos de encontrar
+                                    $celula->setCombinacoes(
+                                            $celula->getCombinacoes()->union(
+                                                    new Set(array(
+                                                        array(
+                                                            0 => array($Vrk, $Vrksk),
+                                                            1 => array($p[0])
+                                                        )
+                                                    ))
+                                            )
+                                    );
+                                    // Une no conjunto de sub-árvores dessa célula, uma nova árvore, que contém,
+                                    // como informação, a variável p[0], que deriva outras duas variáveis (Vrk e Vrksk),
+                                    // representadas pelas sub-árvores filhas da esquerda e da direita, respectivamente.
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     
     /**

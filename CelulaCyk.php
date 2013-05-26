@@ -39,15 +39,39 @@ class CelulaCyk {
     private $combinacoes;
     
     /**
-     * Contém uma árvore de derivação correspondete do parsing até essa célula.
-     * @var Arvore
+     * Conjunto de árvores de derivação correspondete do parsing até essa célula.
+     * @var Set
      */
-    private $subArvore;
+    private $subArvores;
     
     function __construct(Set $variaveis, Set $combinacoes = null, Arvore $subArvore = null) {
         $this->variaveis = $variaveis;
         $this->combinacoes = $combinacoes;
-        $this->subArvore = $subArvore;
+        $this->subArvores = $subArvore;
+    }
+    
+    public function getVariaveis() {
+        return $this->variaveis;
+    }
+
+    public function setVariaveis(Set $variaveis) {
+        $this->variaveis = $variaveis;
+    }
+
+    public function getCombinacoes() {
+        return $this->combinacoes;
+    }
+
+    public function setCombinacoes(Set $combinacoes) {
+        $this->combinacoes = $combinacoes;
+    }
+
+    public function getSubArvore() {
+        return $this->subArvores;
+    }
+
+    public function setSubArvore(Set $subArvore) {
+        $this->subArvores = $subArvore;
     }
 
 }
