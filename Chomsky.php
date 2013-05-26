@@ -295,7 +295,8 @@ class Chomsky {
         $novaGramatica = self::simplificaProducoesSubstituemVariaveis($novaGramatica);
         
         // Etapa 2 de conversão para FNC
-        $novagramatica = self::substituiTerminaisPorVariaveis($novaGramatica);
+        $novaGramatica = self::substituiTerminaisPorVariaveis($novaGramatica);
+        
         // Etapa 2 de conversão para FNC
         $novaGramatica = self::reduzTamanhoProducoes($novaGramatica);
         
