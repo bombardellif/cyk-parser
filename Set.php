@@ -143,6 +143,10 @@ class Set {
             if (is_object($d)) {
                 $this->data[$k] = clone $d;
             }
+            if (is_array($d)) {
+                // Isso é uma gambiarra
+                $this->data[$k] = unserialize(serialize($d));
+            }
         }
     }
 }
