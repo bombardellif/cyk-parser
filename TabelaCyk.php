@@ -1,5 +1,6 @@
 <?php
 
+require_once 'CelulaCyk.php';
 /**
  * <pre>
  * Classe que representa a tabela do algoritmo CYK.

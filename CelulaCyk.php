@@ -44,7 +44,7 @@ class CelulaCyk {
      */
     private $subArvores;
     
-    function __construct(Set $variaveis, Set $combinacoes = null, Arvore $subArvore = null) {
+    function __construct(Set $variaveis, Set $combinacoes = null, Set $subArvore = null) {
         $this->variaveis = $variaveis;
         $this->combinacoes = $combinacoes;
         $this->subArvores = $subArvore;

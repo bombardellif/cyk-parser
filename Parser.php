@@ -1,5 +1,8 @@
 <?php
 
+require_once 'Gramatica.php';
+require_once 'TabelaCyk.php';
+
 /**
  * Classe que executa o algoritmo de parsing CYK de uma dada palavra sobre uma dada
  * gramática.
