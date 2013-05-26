@@ -42,7 +42,7 @@ class Parser {
      */
     public function parse(Palavra $palavra){
         //Verifica se entrada é palavra vazia
-        if (empty($palavra) == null){
+        if (count($palavra->getConteudo()) == 0){
             //Não pode inferir nada
             return null;
         }
