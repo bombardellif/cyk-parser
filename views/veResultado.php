@@ -27,11 +27,16 @@
         
         <br /><br />
         
-        Resultado: <?php var_dump($view['aceita']); ?><br />
+        Resultado: 
+        <?php if (isset($view['aceita']) &&  $view['aceita'] == true): ?>
+            <span class="green">A frase foi aceita.</span>
+        <?php else: ?>
+            <span class="red">A frase foi rejeitada.</span>
+        <?php endif; ?>
         
         <br /><br />
         
-        Tabela do Algoritmo CYK: <?php var_dump($view['tabelaCYK']); ?>
+        Tabela do Algoritmo CYK: <?php echo '<pre>';var_dump($view['tabelaCYK']);echo '</pre>'; ?>
         
         <br /><br />
         

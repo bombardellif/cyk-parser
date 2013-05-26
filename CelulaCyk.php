@@ -8,7 +8,7 @@
 class CelulaCyk {
     
     /**
-     * Conjunto de objetos Palavra (variávis da gramática que estão nessa célula).
+     * Conjunto de String (variávis da gramática que estão nessa célula).
      * @var Set
      */
     private $variaveis;
@@ -20,10 +20,10 @@ class CelulaCyk {
      * NULL, ou
      * array(
      *  0 => array(
-     *      0 => Uma-Palavra-A,
-     *      1 => Uma-Palavra-B
+     *      0 => Um-Simbolo-A,
+     *      1 => Um-Simbolo-B
      *  )
-     *  1 => Uma-Palavra-C
+     *  1 => Uma-Simbolo-C
      * )
      * Note que uma combinacao representa uma iteração do algoritmo, uma vez que o item 0 da combinacao
      * contém as duas variáveis do lado direito de uma produção da gramática e o item 1 
@@ -44,10 +44,10 @@ class CelulaCyk {
      */
     private $subArvores;
     
-    function __construct(Set $variaveis, Set $combinacoes = null, Set $subArvore = null) {
-        $this->variaveis = $variaveis;
-        $this->combinacoes = $combinacoes;
-        $this->subArvores = $subArvore;
+    function __construct(Set $variaveis = null, Set $combinacoes = null, Set $subArvore = null) {
+        $this->variaveis = ($variaveis == null) ? new Set() : $variaveis;
+        $this->combinacoes = ($combinacoes == null) ? new Set() : $combinacoes;
+        $this->subArvores = ($subArvore == null) ? new Set() : $subArvore;
     }
     
     public function getVariaveis() {

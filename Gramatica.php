@@ -49,7 +49,7 @@ class Gramatica {
     
     /**
      *
-     * @var Palavra Variável inicial da gramática, palavra de um único símbolo
+     * @var String Variável inicial da gramática
      */
     private $inicial;
         
@@ -133,8 +133,8 @@ class Gramatica {
                             //Leitura do Inicial
                             if ($this->isLinhaDef("Inicial", $conteudoArquivo[4])){
                                 if ($this->isLinhaSimbolo($conteudoArquivo[5])){
-                                    $inicial = $this->criaPalavra($conteudoArquivo[5]);
-                                    assert(!is_null($inicial) && count($inicial->getConteudo()) == 1); //GLC
+                                    $inicial = $this->criaSimbolo($conteudoArquivo[5]);
+                                    assert(!is_null($inicial)); //GLC
                                     
                                     //Leitura de Regras
                                     if ($this->isLinhaDef("Regras", $conteudoArquivo[6])){
@@ -261,13 +261,13 @@ class Gramatica {
     
     /**
      * Supõe que a linha do parâmetro passou por isLinhaSimbolo, isto é, é uma definição de conjunto com um único símbolo. Sabendo disso 
-     * constói uma palavra com o símbolo lido (palavra de um único símbolo). Note que o conjunto é delimitado pelas chaves "{" e "}"
+     * constói uma String com o símbolo lido. Note que o conjunto é delimitado pelas chaves "{" e "}"
      * 
      * @param string $linha Linha do arquivo a ser avalidada.
-     * @return Palavra Palavra criada a partir do símbolo lido
+     * @return string String criada a partir do símbolo lido
      * @see isLinhaSimbolo
      */
-    private function criaPalavra($linha){
+    private function criaSimbolo($linha){
         //Pega só a parte até o fecha chaves, ignorando tudo após isto (espaços e comentários)
         $linha = substr($linha, 0, strpos($linha, "}")+1);
         
@@ -275,7 +275,7 @@ class Gramatica {
         $simbolo = trim(strtok($linha,",{}#"));
         //Se $linha = "{ S }", espera que $simbolo = "S"
         
-        return new Palavra($simbolo);
+        return $simbolo;
     }
     
     /**

@@ -30,6 +30,7 @@ class Parser {
      */
     function __construct(Gramatica $gramatica) {
         $this->gramatica = $gramatica;
+        $this->tabela = new TabelaCyk();
     }
     
     /**
@@ -40,24 +41,29 @@ class Parser {
      * @return boolean Se a palavra for aceita retorna True, caso contrário retorna False
      */
     public function parse(Palavra $palavra){
-        //Etapa 1: geração da primeira linha da tabela (variáveis que geram terminais) (folhas da árvore)
+        //Etapa 1: geração da primeira linha da tabela (variáveis que geram terminais)
         $n = $palavra->tamanho();
         for ($i = 1; $i <= $n; $i++){
             $set = new Set();
             foreach ($this->gramatica->getTerminais()->getData() as $t){
-                if (((String)$t) == $palavra->getSimbolo($i)){
-                    $set = $set->union(new Set(array($t)));
+                if ($t == $palavra->getSimbolo($i-1)){
+                    foreach ($this->gramatica->getProducoes()->getData() as $p) {
+                        if (((string)$p[1]) == $t) {
+                            $set = $set->union(new Set(array((string)$p[0])));
+                        }
+                    }
+                    break;
                 }
             }
             $this->tabela->set($i, 1, new CelulaCyk($set));
         }
         
         //Etapa 2
-        for ($s=2; $s<$n; $s++) {
-            for ($r=1, $lim=$n-$s+1; $r<$lim; $r++) {
-                $this->tabela->set($r, $s, new CelulaCyk(new Set()));
+        for ($s=2; $s<=$n; $s++) {
+            for ($r=1, $lim=$n-$s+1; $r<=$lim; $r++) {
+                $this->tabela->set($r, $s, new CelulaCyk());
                 // Repete a "roldana"
-                for ($k=1; $k<$s-1; $k++) {
+                for ($k=1; $k<=$s-1; $k++) {
                     // Itera nas variáveis de uma célula na coluna abaixo dessa célula
                     foreach ($this->tabela->get($r, $k)->getVariaveis()->getData() as $Vrk) {
                         // Itera nas variáveis de uma célula na diagonal abaixo e a esquerda dessa célula
@@ -69,7 +75,7 @@ class Parser {
                                     // Une a variável do lado esquerdo dessa produção ao conjunto das variáveis
                                     // contidas na célula atual
                                     $celula->setVariaveis(
-                                            $celula->getVariaveis()->union(new Set(array($p[0]))));
+                                            $celula->getVariaveis()->union(new Set(array((String)$p[0]))));
                                     // Une no conjunto de combinações, dessa célula, uma nova combinação formada 
                                     // a partir da regra que acabamos de encontrar
                                     $celula->setCombinacoes(
@@ -77,7 +83,7 @@ class Parser {
                                                     new Set(array(
                                                         array(
                                                             0 => array($Vrk, $Vrksk),
-                                                            1 => array($p[0])
+                                                            1 => array((String)$p[0])
                                                         )
                                                     ))
                                             )
@@ -92,6 +98,10 @@ class Parser {
                 }
             }
         }
+        
+        //Etapa 3
+        //Se  tiver o inicial na "raiz" da tabela a palavra foi aceita
+        return $this->tabela->get(1, $n)->getVariaveis()->has($this->gramatica->getInicial());
     }
     
     /**
