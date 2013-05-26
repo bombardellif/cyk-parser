@@ -332,6 +332,11 @@ class Gramatica {
         return $saida;
     }
     
+    public function __clone() {
+        $this->variaveis = clone $this->variaveis;
+        $this->terminais = clone $this->terminais;
+        $this->producoes = clone $this->producoes;
+    }
 }
 
 ?>

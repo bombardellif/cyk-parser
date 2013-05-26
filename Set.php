@@ -136,7 +136,15 @@ class Set {
         // =================
         // A contém B, se e somente se, B - A = 0
         return array_udiff($subSet->getData(), $this->data, "Set::compareElems") == array();
-    }    
+    }
+    
+    public function __clone() {
+        foreach ($this->data as $k=>$d) {
+            if (is_object($d)) {
+                $this->data[$k] = clone $d;
+            }
+        }
+    }
 }
 
 ?>
