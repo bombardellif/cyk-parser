@@ -181,12 +181,12 @@ class Chomsky {
      * @param Gramatica $gramatica
      */
     private static function substituiTerminaisPorVariaveis(Gramatica $gramatica) {
-        $gramatica = clone $gramatica;
+        $novaGramatica = clone $gramatica;
         
-        $producoes = $gramatica->getProducoes();
-        $variaveis = $gramatica->getVariaveis();
-        $terminais = $gramatica->getTerminais();
-        $prefixo = self::prefixoParaVariaveis($gramatica, 'C', '\d+$');
+        $producoes = $novaGramatica->getProducoes();
+        $variaveis = $novaGramatica->getVariaveis();
+        $terminais = $novaGramatica->getTerminais();
+        $prefixo = self::prefixoParaVariaveis($novaGramatica, 'C', '\d+$');
         // Esse map fornece um número inteiro para cada terminal da gramática
         $map = array_combine($terminais->getData(), range(1,$terminais->size()));
         
@@ -219,10 +219,10 @@ class Chomsky {
                 }
             }
         }
-        $gramatica->setVariaveis($variaveis);
-        $gramatica->setProducoes($novasProds->union(new Set($prodsAlteradas)));
+        $novaGramatica->setVariaveis($variaveis);
+        $novaGramatica->setProducoes($novasProds->union(new Set($prodsAlteradas)));
         
-        return $gramatica;
+        return $novaGramatica;
     }
     
     /**
@@ -231,11 +231,11 @@ class Chomsky {
      * @param Gramatica $gramatica
      */
     private static function reduzTamanhoProducoes(Gramatica $gramatica) {
-        $gramatica = clone $gramatica;
+        $novaGramatica = clone $gramatica;
         
-        $producoes = $gramatica->getProducoes();
-        $variaveis = $gramatica->getVariaveis();
-        $prefixo = self::prefixoParaVariaveis($gramatica, 'D', '\d+$');
+        $producoes = $novaGramatica->getProducoes();
+        $variaveis = $novaGramatica->getVariaveis();
+        $prefixo = self::prefixoParaVariaveis($novaGramatica, 'D', '\d+$');
         
         $nVar = 1;
         foreach ($producoes->getData() as $p) {
@@ -275,10 +275,10 @@ class Chomsky {
                 $producoes = $producoes->diff(new Set(array($p)))->union(new Set($novasProducoes));
             }
         }
-        $gramatica->setVariaveis($variaveis);
-        $gramatica->setProducoes($producoes);
+        $novaGramatica->setVariaveis($variaveis);
+        $novaGramatica->setProducoes($producoes);
         
-        return $gramatica;
+        return $novaGramatica;
     }
 
 
@@ -288,9 +288,6 @@ class Chomsky {
      * @return Gramatica a gramática na forma normal de Chomsky
      */
     static function getChomsky(Gramatica $gramatica){
-        
-        //Não modifica gramática original
-        $novaGramatica = clone $gramatica;
         
         //Simplificações
         $novaGramatica = self::simplificaProducoesVazias($gramatica);
