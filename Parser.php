@@ -38,9 +38,15 @@ class Parser {
      * pela gramática.
      * 
      * @param Palavra $palavra Palavra a ser avaliada
-     * @return boolean Se a palavra for aceita retorna True, caso contrário retorna False
+     * @return mixed Se a palavra for aceita retorna True, caso contrário retorna False, se a palavra for vazia retorna null
      */
     public function parse(Palavra $palavra){
+        //Verifica se entrada é palavra vazia
+        if (empty($palavra) == null){
+            //Não pode inferir nada
+            return null;
+        }
+        
         //Etapa 1: geração da primeira linha da tabela (variáveis que geram terminais)
         $n = $palavra->tamanho();
         for ($i = 1; $i <= $n; $i++){
