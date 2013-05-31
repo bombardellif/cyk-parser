@@ -51,20 +51,23 @@ class Parser {
         $n = $palavra->tamanho();
         for ($i = 1; $i <= $n; $i++){
             $set = new Set();
+            $arvore = array();
             foreach ($this->gramatica->getTerminais()->getData() as $t){
                 if ($t == $palavra->getSimbolo($i-1)){
                     foreach ($this->gramatica->getProducoes()->getData() as $p) {
                         if (((string)$p[1]) == $t) {
                             $set = $set->union(new Set(array((string)$p[0])));
+                            $folha = new Arvore($t); // Cria a árvore folha relativa ao terminal
+                            $arvore[(string)$p[0]] = new Arvore((string)$p[0], $folha); // Cria a árvore com terminais como sub-árvore
                         }
                     }
                     break;
                 }
             }
-            $this->tabela->set($i, 1, new CelulaCyk($set));
+            $this->tabela->set($i, 1, new CelulaCyk($set, null, $arvore));
         }
         
-        //Etapa 2
+        //Etapa 2.1
         for ($s=2; $s<=$n; $s++) {
             for ($r=1, $lim=$n-$s+1; $r<=$lim; $r++) {
                 $this->tabela->set($r, $s, new CelulaCyk());
@@ -97,6 +100,17 @@ class Parser {
                                     // Une no conjunto de sub-árvores dessa célula, uma nova árvore, que contém,
                                     // como informação, a variável p[0], que deriva outras duas variáveis (Vrk e Vrksk),
                                     // representadas pelas sub-árvores filhas da esquerda e da direita, respectivamente.
+                                    $arvore = new Arvore($p[0], array($this->tabela->get($r, $k)->getSubArvore(), $this->tabela->get($r+$k, $s-$k)->getSubArvore()));
+                                    $Carvore = $celula->getSubArvore();
+                                    if($Carvore == null)
+                                        $Carvore = array(); //celula->setSubArvore(array($p[0] => ))
+                                    if(!isset($Carvore[(string)$p[0]]))
+                                    {
+                                        $Carvore[(string)$p[0]] = array(0 => $arvore);
+                                    } 
+                                    else
+                                        $Carvore[(string)$p[0]][count($Carvore[(string)$p[0]])] = $arvore;
+                                    $celula->setSubArvore($Carvore);
                                 }
                             }
                         }
@@ -104,7 +118,9 @@ class Parser {
                 }
             }
         }
-        
+        //Etapa 2.2
+        //Prepara a lista de árvores
+        $this->geraArvoresDerivacao($n, $this->tabela->get(1, $n)->getSubArvore());
         //Etapa 3
         //Se  tiver o inicial na "raiz" da tabela a palavra foi aceita
         return $this->tabela->get(1, $n)->getVariaveis()->has($this->gramatica->getInicial());
@@ -120,6 +136,16 @@ class Parser {
      */
     public function getArvoresDerivacao(){
         // TODO
+        // calcular o número possível de árvores
+        //$agora = 
+    }
+    /**
+     * 
+     * @param type $n
+     * @param Array de Array de Arvores $listaArvores
+     */
+    public function geraArvoresDerivacao($n, $listaArvores){
+        // TODO ou NADA
     }
     
     /**

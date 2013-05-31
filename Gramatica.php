@@ -13,7 +13,7 @@ require_once './Palavra.php';
 /**
  * Arvores para a derivação
  */
-require_once './arvore.php';
+require_once './Arvore.php';
 
 /**
  * Exceções Utilizadas
