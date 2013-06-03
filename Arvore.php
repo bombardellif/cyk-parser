@@ -162,7 +162,7 @@ class Arvore
         else
         {
             $bola_x += BORDA_DESENHO;
-            $bola_y += RAIO_NODO + BORDA_DESENHO;
+            $bola_y += RAIO_NODO + BORDA_DESENHO; 
             $this->imprimeTexto($bola_x, $bola_y);
         }
     }        
