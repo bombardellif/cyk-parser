@@ -4,6 +4,7 @@ define("ESPACO_NODO", 64); 		// espaçamento entre nodos
 define("ESPACO_NIVEL", 50); 	// espaçamento entre níveis
 define("RAIO_NODO", 20);		// raio dos nodos
 define("BORDA_DESENHO", 30);	// borda para o desenho nao ser cortado (na esquerda e em cima)
+
 /**
  * Classe para representar árvores
  * @author turco
@@ -19,16 +20,24 @@ class Arvore
      * Armazena um conjunto de sub-árvores.
      * @var Array de Arvore 
      */
-    private $_arrSubArvore;        
+    private $_subArvore;        
     /**
      * Construtor da classe Arvore.
      * @param String $id
      * @param Array de Arvore $subarvore
      */
-    public function __construct($id, $subarvore = null)
+    public function __construct($id, $subArvore = null)
     {
         $this->_id = $id;
-        $this->_arrSubArvore = $subarvore;
+        $this->_subArvore = $subArvore;
+    }
+    /**
+     * 
+     * @return String
+     */
+    public function getId()
+    {
+        return $this->_id;
     }
     /**
      * Imprime a árvore.
@@ -45,16 +54,16 @@ class Arvore
      */
     private function nroFolhas()
     {
-	if(empty($this->_arrSubArvore))
+	if(empty($this->_subArvore))
 	{
             return 1;
 	}
 	else
 	{
             $soma = 0;
-            foreach($this->_arrSubArvore as $subArvore)
+            foreach($this->_subArvore as $subArvore)
             {
-                $soma += $subArvore->nroNodosFolha();
+                $soma += $subArvore->nroFolhas();
             }
             return $soma;
         }
@@ -66,14 +75,14 @@ class Arvore
      */
     public function nroMaxFolhas()
     {
-	if(empty($this->_arrSubArvore))
+	if(empty($this->_subArvore))
 	{
             return 1;
 	}
 	else
 	{
             $max = 0;
-            foreach($this->_arrSubArvore as $subArvore)
+            foreach($this->_subArvore as $subArvore)
             {
                 if($subArvore->nroFolhas() > $max)
                 {
@@ -89,7 +98,7 @@ class Arvore
      */
     public function nroSubArvores()
     {
-	return count($this->_arrSubArvore);
+	return count($this->_subArvore);
     }
     /**
      * Imprime na tela o círculo que representa o nó da árvore, juntamente
@@ -103,8 +112,12 @@ class Arvore
 	$cy += BORDA_DESENHO;
 	$r = RAIO_NODO;
 	echo "<circle cx='$cx' cy='$cy' r='$r' stroke='red' stroke-width='2' fill='white' />\n";
-	$cy += 7.5;
-	echo "<text x='$cx' y='$cy' font-family='sans-serif' font-size='20px' text-anchor='middle' fill='black'>$this->_id</text>";
+	$this->imprimeTexto($cx, $cy);	
+    }
+    public function imprimeTexto($cx, $cy)
+    {
+        $cy += 7.5;
+        echo "<text x='$cx' y='$cy' font-family='sans-serif' font-size='20px' text-anchor='middle' fill='black'>$this->_id</text>";
     }
     /**
      * Imprime na tela uma linha de espessura 2px com extremidades em (x0, y0)
@@ -134,16 +147,24 @@ class Arvore
 	$bola_y = $nivel * ESPACO_NIVEL; 	// calcula y em relação ao nível
 	
 	if($this->nroSubArvores() != 0)
+        {
             $mediaLarguraFilho = $largura / $this->nroSubArvores();
 	
-	foreach($this->_arrSubArvore as $subArvore)
-	{
-            $this->imprimeLinha($bola_x, $bola_y, ($mediaLarguraFilho / 2) + $espaco_h, ($bola_y + ESPACO_NIVEL)); 	// desenha a linha ligando as bolas
-            $subArvore->imprimeNodos($nivel + 1, $espaco_h, $mediaLarguraFilho);										// chamada recursiva
-            $espaco_h += $mediaLarguraFilho;																		// adiciona espaçamento
-	}
-		
-	$this->imprimeBola($bola_x, $bola_y); // imprime as bolas no final para aparecerem sobrepostas às linhas
+            foreach($this->_subArvore as $subArvore)
+            {
+                $this->imprimeLinha($bola_x, $bola_y, ($mediaLarguraFilho / 2) + $espaco_h, ($bola_y + ESPACO_NIVEL)); 	// desenha a linha ligando as bolas
+                $subArvore->imprimeNodos($nivel + 1, $espaco_h, $mediaLarguraFilho);										// chamada recursiva
+                $espaco_h += $mediaLarguraFilho;																		// adiciona espaçamento
+            }
+            
+            $this->imprimeBola($bola_x, $bola_y); // imprime as bolas no final para aparecerem sobrepostas às linhas
+        }
+        else
+        {
+            $bola_x += BORDA_DESENHO;
+            $bola_y += RAIO_NODO + BORDA_DESENHO;
+            $this->imprimeTexto($bola_x, $bola_y);
+        }
     }        
 }
 ?>

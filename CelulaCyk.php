@@ -37,17 +37,16 @@ class CelulaCyk {
      * @var Set
      */
     private $combinacoes;
-    
     /**
-     * Array de Array de árvores de derivação correspondente do parsing até essa célula.
-     * @var Array de Array de Arvore
+     * Array de árvores de derivação correspondentes do parsing até essa célula.
+     * @var Array de Arvore
      */
-    private $subArvores;
+    private $arvores;
     
-    function __construct(Set $variaveis = null, Set $combinacoes = null, $subArvore = null) {
+    function __construct(Set $variaveis = null, Set $combinacoes = null, $arvores = null) {
         $this->variaveis = ($variaveis == null) ? new Set() : $variaveis;
         $this->combinacoes = ($combinacoes == null) ? new Set() : $combinacoes;
-        $this->subArvores = ($subArvore == null) ? null : $subArvore;
+        $this->arvores = ($arvores == null) ? null : $arvores;
     }
     
     public function getVariaveis() {
@@ -65,15 +64,32 @@ class CelulaCyk {
     public function setCombinacoes(Set $combinacoes) {
         $this->combinacoes = $combinacoes;
     }
-
-    public function getSubArvore() {
-        return $this->subArvores;
+    
+    public function getArvore($id) {
+        if(!empty($this->arvores))
+        {
+            foreach($this->arvores as $a)
+            {
+                if($id == $a->getId())
+                {
+                    return $a;
+                }
+            }
+        }
+        return null;
+    }
+    
+    public function getArrayArvores() {
+        return $this->arvores;
     }
 
-    public function setSubArvore($subArvore) {
-        $this->subArvores = $subArvore;
+    public function setArrayArvores($arvores) {
+        $this->arvores = $arvores;
     }
-
+    
+    public function nroArvores() {
+        return count($this->arvores);
+    }
 }
 
 ?>

@@ -24,6 +24,8 @@ class Parser {
      */
     private $tabela;
     
+    private $arvores;
+    
     /**
      * Construtor da classe
      * @param Gramatica $gramatica
@@ -58,7 +60,8 @@ class Parser {
                         if (((string)$p[1]) == $t) {
                             $set = $set->union(new Set(array((string)$p[0])));
                             $folha = new Arvore($t); // Cria a árvore folha relativa ao terminal
-                            $arvore[(string)$p[0]] = new Arvore((string)$p[0], $folha); // Cria a árvore com terminais como sub-árvore
+                            $arvore[] = new Arvore((string)$p[0], array($folha));                            
+                            //$arvore[(string)$p[0]] = new Arvore((string)$p[0], $folha); // Cria a árvore com terminais como sub-árvore
                         }
                     }
                     break;
@@ -67,10 +70,11 @@ class Parser {
             $this->tabela->set($i, 1, new CelulaCyk($set, null, $arvore));
         }
         
-        //Etapa 2.1
+        //Etapa 2
         for ($s=2; $s<=$n; $s++) {
             for ($r=1, $lim=$n-$s+1; $r<=$lim; $r++) {
                 $this->tabela->set($r, $s, new CelulaCyk());
+                $arvore = array();
                 // Repete a "roldana"
                 for ($k=1; $k<=$s-1; $k++) {
                     // Itera nas variáveis de uma célula na coluna abaixo dessa célula
@@ -100,7 +104,11 @@ class Parser {
                                     // Une no conjunto de sub-árvores dessa célula, uma nova árvore, que contém,
                                     // como informação, a variável p[0], que deriva outras duas variáveis (Vrk e Vrksk),
                                     // representadas pelas sub-árvores filhas da esquerda e da direita, respectivamente.
-                                    $arvore = new Arvore($p[0], array($this->tabela->get($r, $k)->getSubArvore(), $this->tabela->get($r+$k, $s-$k)->getSubArvore()));
+                                    $Ark = $this->tabela->get($r, $k)->getArvore($Vrk);
+                                    $Arksk = $this->tabela->get($r+$k, $s-$k)->getArvore($Vrksk);
+                                    $arvore[] = new Arvore((string)$p[0], array($Ark, $Arksk));
+                                    //Faser o cod ake :D
+                                    /*$arvore = new Arvore($p[0], array($this->tabela->get($r, $k)->getSubArvore(), $this->tabela->get($r+$k, $s-$k)->getSubArvore()));
                                     $Carvore = $celula->getSubArvore();
                                     if($Carvore == null)
                                         $Carvore = array(); //celula->setSubArvore(array($p[0] => ))
@@ -110,17 +118,16 @@ class Parser {
                                     } 
                                     else
                                         $Carvore[(string)$p[0]][count($Carvore[(string)$p[0]])] = $arvore;
-                                    $celula->setSubArvore($Carvore);
+                                    $celula->setSubArvore($Carvore);*/
                                 }
                             }
                         }
                     }
                 }
+                $this->tabela->get($r, $s)->setArrayArvores($arvore);
             }
         }
-        //Etapa 2.2
-        //Prepara a lista de árvores
-        $this->geraArvoresDerivacao($n, $this->tabela->get(1, $n)->getSubArvore());
+        $this->arvores = $this->tabela->get(1, $n)->getArrayArvores();
         //Etapa 3
         //Se  tiver o inicial na "raiz" da tabela a palavra foi aceita
         return $this->tabela->get(1, $n)->getVariaveis()->has($this->gramatica->getInicial());
@@ -134,18 +141,8 @@ class Parser {
      * @return mixed Array de Árvores ou NULL caso vazia
      * @see Arvore
      */
-    public function getArvoresDerivacao(){
-        // TODO
-        // calcular o número possível de árvores
-        //$agora = 
-    }
-    /**
-     * 
-     * @param type $n
-     * @param Array de Array de Arvores $listaArvores
-     */
-    public function geraArvoresDerivacao($n, $listaArvores){
-        // TODO ou NADA
+    public function getArvoresDerivacao() {
+        return $this->arvores;
     }
     
     /**
