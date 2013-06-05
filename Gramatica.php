@@ -202,7 +202,7 @@ class Gramatica {
      * @return boolean True se a linha é do modelo "{A, B , C,D, ...}   # XXXXX", False caso contrário 
      */
     private function isLinhaSet($linha){
-        $regex = "/^(({\s*})|({\s*((?![,{}\b\n\r\s#]).)+(\s*,\s*((?![,{}\b\n\r\s#]).)+)*\s*}))\s*((\s#).*)?$/";
+        $regex = "/^(({\s*})|({\s*((?![,{}\b\n\r\s#;]).)+(\s*,\s*((?![,{}\b\n\r\s#;]).)+)*\s*}))\s*((\s#).*)?$/";
         return preg_match($regex, $linha) == 1;
     }
     
@@ -213,7 +213,7 @@ class Gramatica {
      * @return boolean True se a linha é do modelo "{S}   # XXXXX", False caso contrário 
      */
     private function isLinhaSimbolo($linha){
-        $regex = "/^({\s*((?![,{}\b\n\r\s#]).)+\s*})\s*((\s#).*)?$/";
+        $regex = "/^({\s*((?![,{}\b\n\r\s#;]).)+\s*})\s*((\s#).*)?$/";
         return preg_match($regex,$linha) == 1;
     }
     
@@ -224,7 +224,7 @@ class Gramatica {
      * @return boolean True se a linha é do modelo "{ S > V, W, ..., Z }  # XXXXX", False caso contrário 
      */
     private function isLinhaRegra($linha){
-        $regex = "/^{\s*((?![,{}\b\n\r\s#]).)+\s*>\s*((?![,{}\b\n\r\s#]).)+(\s*,\s*((?![,{}\b\n\r\s#]).)+)*\s*}\s*((\s#).*)?$/";
+        $regex = "/^{\s*((?![,{}\b\n\r\s#;]).)+\s*>\s*((?![,{}\b\n\r\s#;]).)+(\s*,\s*((?![,{}\b\n\r\s#;]).)+)*\s*}\s*((\s(#|;)).*)?$/";
         return preg_match($regex,$linha) == 1;
     }
     
@@ -298,7 +298,7 @@ class Gramatica {
         //Se $linha = "{ A > B, C}", espera que $esquerdo = "A"
         
         //Pega o primeiro token (lado esquerdo da produção)
-        $simbolo = trim(strtok(",{}#"));
+        $simbolo = trim(strtok(",{}#;"));
         
         //Processa cada símbolo, adicionando os ao conjunto final
         while (is_string($simbolo) && strlen($simbolo) > 0){
@@ -306,7 +306,7 @@ class Gramatica {
             $palavraDireita[] = $simbolo;
             
             //Próximo token, espera algo como "B", mesmo que B seja o último símbolo do cojunto
-            $simbolo = trim(strtok(",{}#"));
+            $simbolo = trim(strtok(",{}#;"));
         }
         
         $regra[0] = new Palavra($palavraEsquerda);

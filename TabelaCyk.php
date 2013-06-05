@@ -65,6 +65,9 @@ class TabelaCyk {
         }
     }
 
+    public function getTabela() {
+        return $this->tabela;
+    }
 }
 
 ?>

@@ -45,7 +45,7 @@ function bootstrap(){
     //Neste caso o usuário não enviou nada ainda, temos que processar tudo
     if (isset($_FILES) && isset($_FILES['file']) && isset($_REQUEST['frase']) && is_string($_REQUEST['frase'])){
         
-        $newFileName = APPLICATION_DIRECTORY . NOME_ARQUIVO_GRAMATICA;
+        $newFileName = APPLICATION_DIRECTORY . NOME_ARQUIVO_GRAMATICA . date("YmdHis") . FORMATO_ARQUIVO_GRAMATICA;
         
         try{
             //Move Arquivo de Up
