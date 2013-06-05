@@ -1,6 +1,6 @@
 <?php
 
-define("ESPACO_NODO", 30); 		// espaçamento entre nodos
+define("ESPACO_NODO", 22); 		// espaçamento entre nodos
 define("ESPACO_NIVEL", 50); 	// espaçamento entre níveis
 define("RAIO_NODO", 20);		// raio dos nodos
 define("BORDA_DESENHO", 30);	// borda para o desenho nao ser cortado (na esquerda e em cima)
@@ -52,7 +52,7 @@ class Arvore
      * Retorna o total de sub-árvores que não contém sub-árvores (folhas)
      * @return int
      */
-    private function nroFolhas()
+    public function nroFolhas()
     {
 	if(empty($this->_subArvore))
 	{

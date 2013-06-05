@@ -65,16 +65,18 @@ class CelulaCyk {
         $this->combinacoes = $combinacoes;
     }
     
-    public function getArvore($id) {
+    public function getArrayArvore($id) {
         if(!empty($this->arvores))
         {
+            $arvores = array();
             foreach($this->arvores as $a)
             {
                 if($id == $a->getId())
                 {
-                    return $a;
+                    $arvores[] = $a;
                 }
             }
+            return $arvores;
         }
         return null;
     }

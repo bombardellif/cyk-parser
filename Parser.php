@@ -104,21 +104,15 @@ class Parser {
                                     // Une no conjunto de sub-árvores dessa célula, uma nova árvore, que contém,
                                     // como informação, a variável p[0], que deriva outras duas variáveis (Vrk e Vrksk),
                                     // representadas pelas sub-árvores filhas da esquerda e da direita, respectivamente.
-                                    $Ark = $this->tabela->get($r, $k)->getArvore($Vrk);
-                                    $Arksk = $this->tabela->get($r+$k, $s-$k)->getArvore($Vrksk);
-                                    $arvore[] = new Arvore((string)$p[0], array($Ark, $Arksk));
-                                    //Faser o cod ake :D
-                                    /*$arvore = new Arvore($p[0], array($this->tabela->get($r, $k)->getSubArvore(), $this->tabela->get($r+$k, $s-$k)->getSubArvore()));
-                                    $Carvore = $celula->getSubArvore();
-                                    if($Carvore == null)
-                                        $Carvore = array(); //celula->setSubArvore(array($p[0] => ))
-                                    if(!isset($Carvore[(string)$p[0]]))
+                                    $arrArk = $this->tabela->get($r, $k)->getArrayArvore($Vrk);
+                                    $arrArksk = $this->tabela->get($r+$k, $s-$k)->getArrayArvore($Vrksk);                                    
+                                    foreach($arrArk as $Ark)
                                     {
-                                        $Carvore[(string)$p[0]] = array(0 => $arvore);
-                                    } 
-                                    else
-                                        $Carvore[(string)$p[0]][count($Carvore[(string)$p[0]])] = $arvore;
-                                    $celula->setSubArvore($Carvore);*/
+                                        foreach($arrArksk as $Arksk)
+                                        {
+                                            $arvore[] = new Arvore((string)$p[0], array($Ark, $Arksk));
+                                        }
+                                    }
                                 }
                             }
                         }
