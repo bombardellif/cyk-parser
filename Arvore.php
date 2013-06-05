@@ -1,6 +1,6 @@
 <?php
 
-define("ESPACO_NODO", 64); 		// espaçamento entre nodos
+define("ESPACO_NODO", 30); 		// espaçamento entre nodos
 define("ESPACO_NIVEL", 50); 	// espaçamento entre níveis
 define("RAIO_NODO", 20);		// raio dos nodos
 define("BORDA_DESENHO", 30);	// borda para o desenho nao ser cortado (na esquerda e em cima)
@@ -45,7 +45,7 @@ class Arvore
     public function imprimeArvore()
     {
         // calcula a largura da árvore
-	$larguraArvore = $this->nroMaxFolhas() * ESPACO_NODO * $this->nroSubArvores();
+	$larguraArvore = pow(2, $this->nroNiveis()) * ESPACO_NODO; //$this->nroMaxFolhas() * ESPACO_NODO * $this->nroSubArvores();
 	$this->imprimeNodos(0, 0, $larguraArvore);
     }
     /**
@@ -93,7 +93,27 @@ class Arvore
 	}
     }
     /**
-     * Retorna o número de sub-árvores
+     * Retorna o número de níveis da árvore.
+     * @return int
+     */
+    public function nroNiveis()
+    {
+        if(empty($this->_subArvore))
+        {
+            return 0;
+        }
+        $max = 0;
+        //$subarvores = new array();
+        foreach($this->_subArvore as $s)
+        {
+            $niveisSub = 1 + $s->nroNiveis(); // Avança o nível
+            if($niveisSub > $max)
+                $max = $niveisSub;
+        }
+        return $max;
+    }
+    /**
+     * Retorna o número de sub-árvores.
      * @return int
      */
     public function nroSubArvores()
@@ -167,4 +187,7 @@ class Arvore
         }
     }        
 }
+
+//$arv = new Arvore("oi", array(new Arvore("a"), new Arvore("B")));
+//echo $arv->nroNiveis();
 ?>

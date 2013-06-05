@@ -56,17 +56,19 @@
             <div id="tabs">
                 <ul>
                     <?php
-                        for($i = 0; $i < count($view['arvores']); $i++)
+                        for($i = 1; $i <= count($view['arvores']); $i++)
                         {
-                            echo "<li><a href='#tabs-".($i + 1)."'>Arvore $i</a></li>";
+                            echo "<li><a href='#tabs-$i'>Arvore $i</a></li>";
                         }
                     ?>
                 </ul>
                     <?php
                         for($i = 0; $i < count($view['arvores']); $i++)
                         {
-                            echo "<div id='tabs-".($i + 1)."' height='1000'>";
-                            echo "<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='1000'>";
+                            $altura = ($view['arvores'][$i]->nroNiveis() + 1) * ESPACO_NIVEL + BORDA_DESENHO;
+                            $largura = (pow(2, ($view['arvores'][$i]->nroNiveis() - 1)) * ESPACO_NODO);
+                            echo "<div id='tabs-".($i + 1)."' height='$altura' style='position: relative;'>";                            
+                            echo "<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='$altura' style='position: relative; left: 50%; margin-left: -".$largura."px;'>";
                             $view['arvores'][$i]->imprimeArvore();
                             echo "</svg>";
                             echo "</div>";
