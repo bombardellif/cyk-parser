@@ -18,7 +18,7 @@
         
         <div id="corpo">
             <div id="info-subheader" class="infobox">
-                Resultado do Processamento da Frase
+                <b>Resultado do Processamento da Frase</b>
             </div>
 
             <div id="info-entrada" class="infobox">
