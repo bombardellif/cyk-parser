@@ -1,8 +1,60 @@
-body {
+.pagina-inicial {
 	font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";
 	font-size: 10pt;
     margin: 0px;
     background-image: url('img/bg-body.jpg');
+}
+.pagina-resultado{
+    font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";
+	font-size: 10pt;
+    margin: 0px;
+    background-image: url('img/bg-body.jpg');
+}
+#corpo {
+    background-color: #FFFFFF;
+    border: 1px solid #002E8A;
+    left: 14%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 2%;
+    position: relative;
+    width: 70%;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+}
+#rodape {
+    background-color: #FFFFFF;
+    border: 1px solid #002E8A;
+    left: 14%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 2%;
+    position: relative;
+    width: 70%;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+}
+#info-subheader{
+    font-size: 12pt;
+}
+.infobox{
+    padding:5px;
+    background-color: #F5F6CE;
+    margin-bottom: 20px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+}
+.yellow{
+    color: #FFCC00;
+}
+.red{
+    color: #FF0000;
+}
+.green{
+    color: #006600;
 }
 .x5{
     width: 400px;
@@ -33,9 +85,9 @@ body {
     width: 100%;
 }
 #header{
-    height: 50px;
+    height: 20px;
     background-color: #F5F6CE;
-    line-height: 50px;
+    line-height: 20px;
     padding: 10px;
     text-align: center;
 }

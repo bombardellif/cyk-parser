@@ -70,7 +70,9 @@ function bootstrap(){
             $view['gramaticaChomsky'] = $gramaticaChomsky;
             
             //Transforma a entrada em uma array de símbolos
-            $frase = preg_split ("/[,{}\b\n\r\s#]/", $_REQUEST['frase'], NULL, PREG_SPLIT_NO_EMPTY);
+            $frase = preg_split ("/[,{}\b\n\r\s;#]/", $_REQUEST['frase'], NULL, PREG_SPLIT_NO_EMPTY);
+            
+            $view['nroPalavrasFrase'] = count($frase);
             
             //Aqui testa se a frase faz parte da linguagem (se frase pertence a ACEITA($gramatica)) (algoritmo de parsing)
             $parser = new Parser($gramaticaChomsky);

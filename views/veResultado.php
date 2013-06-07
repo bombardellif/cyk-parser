@@ -6,112 +6,136 @@
         <link rel="stylesheet" href="style.css" />
         <link rel="stylesheet" href="jquery-ui.css" />
         <script src="jquery-1.9.1.js"></script>
-	<script src="jquery-ui.js"></script>
+        <script src="jquery-ui.js"></script>
         <script>
-	$(function() {
-		$( "#tabs" ).tabs();
-	});
-	</script>
+            $(function() {
+                $( "#tabs" ).tabs();
+            });
+        </script>
     </head>
-    <body>
-        <br />
-        Usando arquivo: <?php echo $view['arquivo']; ?><br />
-        Frase: <?php echo $view['frase']; ?><br />
+    <body class="pagina-resultado">
+        <div id="header">CYK-PARSER - Linguagens Formais e Autômatos</div>
+        
+        <div id="corpo">
+            <div id="info-subheader" class="infobox">
+                Resultado do processamento da frase
+            </div>
 
-        <br /><br />
-        
-        Gramática Original: <br />
-        <pre><?php //var_dump($view['gramaticaOriginal']); ?></pre>
-        <?php if (isset($view['gramaticaOriginal']) && $view['gramaticaOriginal'] instanceof Gramatica):?>
-        <?php echo $view['gramaticaOriginal']->saidaFormatada(); ?>
-        <?php endif; ?>
-        
-        <br /><br />
-        
-        Chomsky: <br />
-        <pre><?php //var_dump($view['gramaticaChomsky']); ?></pre>
-        <?php if (isset($view['gramaticaChomsky']) && $view['gramaticaChomsky'] instanceof Gramatica):?>
-        <?php echo $view['gramaticaChomsky']->saidaFormatada(); ?>
-        <?php endif; ?>
-        
-        <br /><br />
-        
-        Resultado: 
-        <?php if (isset($view['aceita']) &&  $view['aceita'] === true): ?>
-            <span class="green">A frase foi aceita.</span>
-        <?php elseif ($view['aceita'] === null): ?>
-            <span class="yellow">A frase é vazia (não aplica CYK).</span>
-        <?php else: ?>
-            <span class="red">A frase foi rejeitada.</span>
-        <?php endif; ?>
-        
-        <br /><br />
-        
-        <?php if ($view['aceita'] !== null): ?>
-            Tabela do Algoritmo CYK: <?php /*echo '<pre>';var_dump($view['tabelaCYK']);echo '</pre>';*/ ?>
-            <table style='background: #fff;' align='center'>
-                <?php
-                    // O número de palavras é o número de folhas da árvore [GAMBIARRA]
-                    $n = $view['arvores'][0]->nroFolhas();
-                    for($k = $n; $k > 0; $k--)
-                    {
-                        echo "<tr>";
-                        for($i = 1; $i <= $n; $i++)
+            <div id="info-entrada" class="infobox">
+                <b>Usando arquivo:</b> <?php echo $view['arquivo']; ?><br />
+                <b>Frase:</b> <?php echo $view['frase']; ?><br />
+            </div>
+
+            <div class="info-gramatica infobox">
+                <b>Gramática Original:</b> <br />
+                <pre><?php //var_dump($view['gramaticaOriginal']); ?></pre>
+                <?php if (isset($view['gramaticaOriginal']) && $view['gramaticaOriginal'] instanceof Gramatica):?>
+                <?php echo $view['gramaticaOriginal']->saidaFormatada(); ?>
+                <?php endif; ?>
+            </div>
+
+            <div class="info-gramatica infobox">
+                <b>Chomsky:</b> <br />
+                <pre><?php //var_dump($view['gramaticaChomsky']); ?></pre>
+                <?php if (isset($view['gramaticaChomsky']) && $view['gramaticaChomsky'] instanceof Gramatica):?>
+                <?php echo $view['gramaticaChomsky']->saidaFormatada(); ?>
+                <?php endif; ?>
+            </div>
+
+
+            <div id="resultado" class="infobox">
+                <b>Resultado: </b>
+                <?php if (isset($view['aceita']) &&  $view['aceita'] === true): ?>
+                    <span class="green">A frase foi aceita.</span>
+                <?php elseif ($view['aceita'] === null): ?>
+                    <span class="yellow">A frase é vazia (não aplica CYK).</span>
+                <?php else: ?>
+                    <span class="red">A frase foi rejeitada.</span>
+                <?php endif; ?>
+            </div>
+
+            <?php if ($view['aceita'] !== null): ?>
+            <div class="infobox"><b>Tabela do Algoritmo CYK:</b> <?php /*echo '<pre>';var_dump($view['tabelaCYK']);echo '</pre>';*/ ?></div>
+                <table style='background: #fff;' align='center'>
+                    <?php
+                        // O número de palavras é o número de folhas da árvore [GAMBIARRA]
+                        $n = $view['nroPalavrasFrase']; //$view['arvores'][0]->nroFolhas();
+                        for($k = $n; $k > 0; $k--)
                         {
-                            $celula = $view['tabelaCYK']->get($i, $k);
-                            if($celula == NULL) // não há valor na coordenada, imprime célula vazia
+                            echo "<tr>";
+                            for($i = 1; $i <= $n; $i++)
                             {
-                                echo "<td style='min-width: 30px; height: 30px; border: 1px solid white;'>";
-                            }
-                            else
-                            {
-                                echo "<td style='min-width: 30px; height: 30px; border: 1px dashed black;' align='center'>";
-                                $vars = $celula->getVariaveis();
-                                if($vars->size() > 0)
+                                $celula = $view['tabelaCYK']->get($i, $k);
+                                if($celula == NULL) // não há valor na coordenada, imprime célula vazia
                                 {
-                                    $arrayVars = $vars->getData();
-                                    echo "$arrayVars[0]";
-                                    for($j = 1; $j < count($arrayVars); $j++)
+                                    echo "<td style='min-width: 100px; height: 100px; border: 1px solid white;'>";
+                                }
+                                else
+                                {
+                                    echo "<td style='min-width: 100px; height: 100px; border: 1px dashed black;' align='center'>";
+                                    $vars = $celula->getVariaveis();
+                                    if($vars->size() > 0)
                                     {
-                                        echo ", $arrayVars[$j]";
+                                        $arrayVars = $vars->getData();
+                                        echo "$arrayVars[0]";
+                                        for($j = 1; $j < count($arrayVars); $j++)
+                                        {
+                                            echo ", $arrayVars[$j]";
+                                        }
+                                    }
+                                    $vars = $celula->getCombinacoes();
+                                    
+                                    if($vars->size() > 0)
+                                    {
+                                        $saida = array();
+                                        foreach ($vars->getData() as $combinacao){
+                                            $saida[] = $combinacao[1][0] . ' > ' . implode(",",$combinacao[0]);
+                                        }
+                                        echo "<div class=\"combinacoes-celula\">" .implode(";",$saida). "</div>";
                                     }
                                 }
+                                echo "</td>";
                             }
-                            echo "</td>";
+                            echo "</tr>";
                         }
-                        echo "</tr>";
-                    }
-                    ?>
-            </table>
-            <br /><br />
-
-            Árvores:
-            <div id="tabs">
-                <ul>
-                    <?php
-                        $maiorAltura = 0;
-                        for($i = 1; $i <= count($view['arvores']); $i++)
-                        {
-                            echo "<li><a href='#tabs-$i'>Arvore $i</a></li>";
-                            $altura = ($view['arvores'][$i - 1]->nroNiveis() + 1) * ESPACO_NIVEL + BORDA_DESENHO;
-                            if($altura > $maiorAltura)
-                                $maiorAltura = $altura;
-                        }
-                    ?>
-                </ul>
-                    <?php
-                        for($i = 0; $i < count($view['arvores']); $i++)
-                        {
-                            $altura = ($view['arvores'][$i]->nroNiveis() + 1) * ESPACO_NIVEL + BORDA_DESENHO;
-                            $largura = (pow(2, ($view['arvores'][$i]->nroNiveis() - 1)) * ESPACO_NODO);
-                            echo "<div id='tabs-".($i + 1)."' height='$maiorAltura' style='overflow: scroll;'>";                            
-                            echo "<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='$maiorAltura' width='".(($largura * 2) + 30)."' style='position: relative; left: 50%; margin-left: -".($largura - 30)."px;'>";
-                            $view['arvores'][$i]->imprimeArvore();
-                            echo "</svg>";
-                            echo "</div>";
-                        }
-                    ?>
-            </div>
-        <?php endif; ?>
+                        ?>
+                </table>
+                <br /><br />
+                <div class="infobox"><b>Árvores:</b></div>
+                <?php if (!is_null($view['arvores']) && is_array($view['arvores']) && count($view['arvores']) > 0): ?>
+                    <div id="tabs">
+                        <ul>
+                            <?php
+                                $maiorAltura = 0;
+                                for($i = 1; $i <= count($view['arvores']); $i++)
+                                {
+                                    echo "<li><a href='#tabs-$i'>Arvore $i</a></li>";
+                                    $altura = ($view['arvores'][$i - 1]->nroNiveis() + 1) * ESPACO_NIVEL + BORDA_DESENHO;
+                                    if($altura > $maiorAltura)
+                                        $maiorAltura = $altura;
+                                }
+                            ?>
+                        </ul>
+                            <?php
+                                for($i = 0; $i < count($view['arvores']); $i++)
+                                {
+                                    $altura = ($view['arvores'][$i]->nroNiveis() + 1) * ESPACO_NIVEL + BORDA_DESENHO;
+                                    $largura = (pow(2, ($view['arvores'][$i]->nroNiveis() - 1)) * ESPACO_NODO);
+                                    echo "<div id='tabs-".($i + 1)."' height='$maiorAltura' style='overflow: scroll;'>";                            
+                                    echo "<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='$maiorAltura' width='".(($largura * 2) + 30)."' style='position: relative; left: 50%; margin-left: -".($largura - 30)."px;'>";
+                                    $view['arvores'][$i]->imprimeArvore();
+                                    echo "</svg>";
+                                    echo "</div>";
+                                }
+                            ?>
+                    </div>
+                <?php else: ?>
+                    <span class="red">Nenhuma árvore gerada.</span>
+                <?php endif; ?>
+            <?php endif; ?>
+        </div>
+        <div id="rodape">
+            <b>Autores:</b> Eduardo A. Turconi, Fernando B. da Silva, William B. da Silva
+        </div>
     </body>
 </html>
