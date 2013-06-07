@@ -18,11 +18,11 @@
         
         <div id="corpo">
             <div id="info-subheader" class="infobox">
-                Resultado do processamento da frase
+                Resultado do Processamento da Frase
             </div>
 
             <div id="info-entrada" class="infobox">
-                <b>Usando arquivo:</b> <?php echo $view['arquivo']; ?><br />
+                <b>Usando Arquivo:</b> <?php echo $view['arquivo']; ?><br />
                 <b>Frase:</b> <?php echo $view['frase']; ?><br />
             </div>
 
@@ -35,7 +35,7 @@
             </div>
 
             <div class="info-gramatica infobox">
-                <b>Chomsky:</b> <br />
+                <b>Gramática na Forma Normal de Chomsky:</b> <br />
                 <pre><?php //var_dump($view['gramaticaChomsky']); ?></pre>
                 <?php if (isset($view['gramaticaChomsky']) && $view['gramaticaChomsky'] instanceof Gramatica):?>
                 <?php echo $view['gramaticaChomsky']->saidaFormatada(); ?>
@@ -101,7 +101,7 @@
                         ?>
                 </table>
                 <br /><br />
-                <div class="infobox"><b>Árvores:</b></div>
+                <div class="infobox"><b>Árvores de Derivação:</b></div>
                 <?php if (!is_null($view['arvores']) && is_array($view['arvores']) && count($view['arvores']) > 0): ?>
                     <div id="tabs">
                         <ul>
@@ -130,7 +130,7 @@
                             ?>
                     </div>
                 <?php else: ?>
-                    <span class="red">Nenhuma árvore gerada.</span>
+                    <span class="red">Nenhuma Árvore foi Gerada.</span>
                 <?php endif; ?>
             <?php endif; ?>
         </div>
