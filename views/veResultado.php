@@ -68,11 +68,11 @@
                                 $celula = $view['tabelaCYK']->get($i, $k);
                                 if($celula == NULL) // não há valor na coordenada, imprime célula vazia
                                 {
-                                    echo "<td style='min-width: 100px; height: 100px; border: 1px solid white;'>";
+                                    echo "<td class=\"celula-cyk-vazia\">";
                                 }
                                 else
                                 {
-                                    echo "<td style='min-width: 100px; height: 100px; border: 1px dashed black;' align='center'>";
+                                    echo "<td class=\"celula-cyk\" align='center'>";
                                     $vars = $celula->getVariaveis();
                                     if($vars->size() > 0)
                                     {
@@ -91,7 +91,7 @@
                                         foreach ($vars->getData() as $combinacao){
                                             $saida[] = $combinacao[1][0] . ' > ' . implode(",",$combinacao[0]);
                                         }
-                                        echo "<div class=\"combinacoes-celula\">" .implode(";",$saida). "</div>";
+                                        echo "<div class=\"combinacoes-celula\">" .implode("; <br />",$saida). "</div>";
                                     }
                                 }
                                 echo "</td>";
@@ -109,7 +109,7 @@
                                 $maiorAltura = 0;
                                 for($i = 1; $i <= count($view['arvores']); $i++)
                                 {
-                                    echo "<li><a href='#tabs-$i'>Arvore $i</a></li>";
+                                    echo "<li><a href='#tabs-$i'>Árvore $i</a></li>";
                                     $altura = ($view['arvores'][$i - 1]->nroNiveis() + 1) * ESPACO_NIVEL + BORDA_DESENHO;
                                     if($altura > $maiorAltura)
                                         $maiorAltura = $altura;
