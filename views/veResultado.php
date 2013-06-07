@@ -89,7 +89,7 @@
                                     {
                                         $saida = array();
                                         foreach ($vars->getData() as $combinacao){
-                                            $saida[] = $combinacao[1][0] . ' > ' . implode(",",$combinacao[0]);
+                                            $saida[] = $combinacao[1][0] . ' > ' . implode(", ",$combinacao[0]);
                                         }
                                         echo "<div class=\"combinacoes-celula\">" .implode("; <br />",$saida). "</div>";
                                     }
