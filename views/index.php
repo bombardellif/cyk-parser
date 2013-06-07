@@ -32,6 +32,9 @@
                 <div class="clearBlock"></div>
             </form>
         </div>
+        <div id="footer">
+            <b>Autores:</b> Eduardo A. Turconi, Fernando B. da Silva, William B. da Silva
+        </div>
     </body>
 </html>
 

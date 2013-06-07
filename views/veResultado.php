@@ -134,7 +134,7 @@
                 <?php endif; ?>
             <?php endif; ?>
         </div>
-        <div id="rodape">
+        <div id="footer">
             <b>Autores:</b> Eduardo A. Turconi, Fernando B. da Silva, William B. da Silva
         </div>
     </body>
