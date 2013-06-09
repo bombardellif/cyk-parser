@@ -74,6 +74,8 @@ function bootstrap(){
             
             $view['nroPalavrasFrase'] = count($frase);
             
+            $view['arrayFrase'] = $frase;
+            
             //Aqui testa se a frase faz parte da linguagem (se frase pertence a ACEITA($gramatica)) (algoritmo de parsing)
             $parser = new Parser($gramaticaChomsky);
             $view['aceita'] = $parser->parse(new Palavra($frase));

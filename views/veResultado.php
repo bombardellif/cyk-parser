@@ -58,8 +58,8 @@
             <div class="infobox"><b>Tabela do Algoritmo CYK:</b> <?php /*echo '<pre>';var_dump($view['tabelaCYK']);echo '</pre>';*/ ?></div>
                 <table style='background: #fff;' align='center'>
                     <?php
-                        // O número de palavras é o número de folhas da árvore [GAMBIARRA]
-                        $n = $view['nroPalavrasFrase']; //$view['arvores'][0]->nroFolhas();
+                        // O número de palavras é o número de folhas da árvore
+                        $n = $view['nroPalavrasFrase'];
                         for($k = $n; $k > 0; $k--)
                         {
                             echo "<tr>";
@@ -98,6 +98,13 @@
                             }
                             echo "</tr>";
                         }
+                        
+                        echo "<tr>"; // imprime as variáveis
+                        for($i = 0; $i < $view['nroPalavrasFrase']; $i++)
+                        {
+                            echo "<td class=\"celula-cyk\">".$view['arrayFrase'][$i]."</td>";
+                        }
+                        echo "</tr>";
                         ?>
                 </table>
                 <br /><br />
@@ -109,7 +116,7 @@
                                 $maiorAltura = 0;
                                 for($i = 1; $i <= count($view['arvores']); $i++)
                                 {
-                                    echo "<li><a href='#tabs-$i'>Árvore $i</a></li>";
+                                    echo "<li><a href='#tabs-$i'>Árvore $i</a></li>\n";
                                     $altura = ($view['arvores'][$i - 1]->nroNiveis() + 1) * ESPACO_NIVEL + BORDA_DESENHO;
                                     if($altura > $maiorAltura)
                                         $maiorAltura = $altura;
@@ -120,12 +127,12 @@
                                 for($i = 0; $i < count($view['arvores']); $i++)
                                 {
                                     $altura = ($view['arvores'][$i]->nroNiveis() + 1) * ESPACO_NIVEL + BORDA_DESENHO;
-                                    $largura = (pow(2, ($view['arvores'][$i]->nroNiveis() - 1)) * ESPACO_NODO);
-                                    echo "<div id='tabs-".($i + 1)."' height='$maiorAltura' style='overflow: scroll;'>";                            
-                                    echo "<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='$maiorAltura' width='".(($largura * 2) + 30)."' style='position: relative; left: 50%; margin-left: -".($largura - 30)."px;'>";
+                                    $largura = (pow(2, ($view['arvores'][$i]->nroNiveis())) * ESPACO_NODO);
+                                    echo "<div id='tabs-".($i + 1)."' height='$maiorAltura' style='overflow: scroll;'>\n";                            
+                                    echo "<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='$maiorAltura' width='".($largura + 30)."' style='position: relative; left: 50%; margin-left: -".(($largura / 2) + 30)."px;'>\n";
                                     $view['arvores'][$i]->imprimeArvore();
-                                    echo "</svg>";
-                                    echo "</div>";
+                                    echo "</svg>\n";
+                                    echo "</div>\n";
                                 }
                             ?>
                     </div>
