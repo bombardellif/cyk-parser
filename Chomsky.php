@@ -41,7 +41,7 @@ class Chomsky {
             $qtdElementos = $V³->size();
             //Ve se cada produção gera alguma palavra cujos simbolos estao em V³
             foreach ($gramaticaSimples->getProducoes()->getData() as $producao){
-                if ($V³->contains(new Set(array($producao[1])))){
+                if ($V³->contains(new Set($producao[1]->getConteudo()))){
                     //Se sim adicona-o a V³
                     $V³ = $V³->union(new Set(array($producao[0])));
                     //var_dump($producao[0]);
@@ -66,7 +66,11 @@ class Chomsky {
         while($P1->size() > $qtdElementos){
             $qtdElementos = $P1->size();
             //Ve se cada produção gera alguma palavra com símbolos que geram o vazio
-            foreach ($P1->getData() as $p){
+            $filaP1 = $P1->getData();
+            while(!empty($filaP1)){
+                //dequeue
+                $p = array_shift($filaP1);
+                
                 foreach($V³->getData() as $x){
                     if ($p[1]->contem($x->getConteudo()[0]) && $p[1] != $x){
                         //Aqui significa que $p leva a uma palavra que contem símbolos que geram o vazio
@@ -75,7 +79,8 @@ class Chomsky {
                         $novoP[1] = $p[1]->remove($x->getConteudo()[0]);
                         //Adiciona a nova regra a P1 (sem X)
                         $P1 = $P1->union(new Set(array($novoP)));
-                        break;
+                        //enqueue
+                        array_push($filaP1, $novoP);
                     }
                 }
             }
@@ -116,7 +121,7 @@ class Chomsky {
                         //Se passou então adiciona ao fecho
                         $fecho[$variavel] = $fecho[$variavel]->union(new Set(array((String)$p[1])));
                         //E adiciona à pilha para ela ser processada
-                        array_push($pilha, (String)$p[0]);
+                        array_push($pilha, (String)$p[1]);
                     }
                 }
             }   
