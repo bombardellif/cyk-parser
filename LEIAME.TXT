@@ -1,0 +1,19 @@
+------- CYK PARSER - LINGUAGENS FORMAIS E AUTÔMATOS -------
+Autores: Eduardo Turconi, Fernando da Silva, William da Silva
+Data: 18 de Junho de 2013
+
+------- INSTRUÇÕES --------
+Linguagem: 
+-PHP
+-HTML 5
+
+Requisitos:
+-Servidor Web Apache (2.2 ou mais recente)
+-Navegador Web (Com suporte a HTML 5 e SVG)
+-Php (5.4 ou superior)
+
+Copie toda a pasta do sistema para o diretório raiz do servidor web Apache (pode variar a cada sistema operacional)
+Abra o navegador web e digite na barra de endereço:
+"http://localhost/cyk-parser"
+
+
